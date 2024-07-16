@@ -184,7 +184,7 @@ public class Stimulation : MonoBehaviour
         yield return new WaitForSeconds(delay);
         WSS.create_event(1, 0, 1, 0, 0, new int[] { 11, 11, 0, 0 }, new int[] { 11, 11, 0, 0 }, new int[] { 0, 0, 50 }); //create a 3mA square wave with 0 PW and 50us IPD for ch1
         yield return new WaitForSeconds(delay);
-        WSS.edit_event_ratio(1, 4); //make the wave symetric
+        WSS.edit_event_ratio(1, 8); //make the wave symetric
         yield return new WaitForSeconds(delay);
         WSS.add_event_to_schedule(1, 1);
         yield return new WaitForSeconds(delay);
@@ -194,7 +194,7 @@ public class Stimulation : MonoBehaviour
         yield return new WaitForSeconds(delay);
         WSS.create_event(2, 2, 2, 0, 0, new int[] { 11, 0, 11, 0 }, new int[] { 11, 0, 11, 0 }, new int[] { 0, 0, 50 }); //create a 3mA square wave with 0 PW and 50us IPD for ch2
         yield return new WaitForSeconds(delay);
-        WSS.edit_event_ratio(2, 4); //make the wave symetric
+        WSS.edit_event_ratio(2, 8); //make the wave symetric
         yield return new WaitForSeconds(delay);
         WSS.add_event_to_schedule(2, 2);
         yield return new WaitForSeconds(delay);
@@ -204,7 +204,7 @@ public class Stimulation : MonoBehaviour
         yield return new WaitForSeconds(delay);
         WSS.create_event(3, 4, 3, 0, 0, new int[] { 11, 0, 0, 11 }, new int[] { 11, 0, 0, 11 }, new int[] { 0, 0, 50 }); //create a 3mA square wave with 0 PW and 50us IPD for ch3
         yield return new WaitForSeconds(delay);
-        WSS.edit_event_ratio(3, 4); //make the wave symetric
+        WSS.edit_event_ratio(3, 8); //make the wave symetric
         yield return new WaitForSeconds(delay);
         WSS.add_event_to_schedule(3, 3);
         yield return new WaitForSeconds(delay);

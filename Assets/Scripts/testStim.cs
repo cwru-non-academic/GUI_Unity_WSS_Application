@@ -9,16 +9,21 @@ public class testStim : MonoBehaviour
     [SerializeField] private Stimulation stim;
     [SerializeField] private ProgressBar pwBar;
     [SerializeField] private ProgressBar AmpBar;
+    [SerializeField] private ProgressBar pwBar2;
+    [SerializeField] private ProgressBar AmpBar2;
     [SerializeField] private GameObject stimOn;
     [SerializeField] private GameObject stimOff;
 
-    private int amp =3;//in mA
+    private int amp =2;//in mA
     private int pw = 0; //in us
+    private int amp2 = 2;//in mA
+    private int pw2 = 0; //in us
     private int deltaPW = 1;
     private int deltaAmp = 1;
     private bool upOn = false;
     private bool downOn = false;
     private float timeDelay = 0.1f; //in sec
+    private bool ch1;
 
     [SerializeField] private TMP_Text ready;
     // Start is called before the first frame update
@@ -26,6 +31,9 @@ public class testStim : MonoBehaviour
     {
         pwBar.currentPercent = pw;
         AmpBar.currentPercent = amp;
+        pwBar2.currentPercent = pw2;
+        AmpBar2.currentPercent = amp2;
+        ch1 = true;
         stimOff.SetActive(true);
         stimOn.SetActive(false);
     }
@@ -67,6 +75,9 @@ public class testStim : MonoBehaviour
         {
             downOn = false;
             ZeroStim();
+        } else if(Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.RightArrow))
+        {
+            ch1 = !ch1;
         }
 
         if (stim.Ready())
@@ -108,47 +119,93 @@ public class testStim : MonoBehaviour
     public void test()
     {
         stim.StimulateAnalog("Thumb", true, pw, amp);
-        stim.StimulateAnalog("Index", true, pw, amp);
+        stim.StimulateAnalog("Index", true, pw2, amp2);
         stimOn.SetActive(true);
         stimOff.SetActive(false);
     }
 
     private void increaseStim()
     {
-        if (pw>255-deltaPW)
+        if (ch1)
         {
-            pw = 4;
-            amp += deltaAmp;
-        }else
+            if (pw > 255 - deltaPW)
+            {
+                if(amp < 80)
+                {
+                    pw = 4;
+                    amp += deltaAmp;
+                }
+            }
+            else
+            {
+                pw += deltaPW;
+            }
+            pwBar.currentPercent = pw;
+            AmpBar.currentPercent = amp;
+            stim.StimulateAnalog("Thumb", true, pw, amp);
+        } else
         {
-            pw += deltaPW;
+            if (pw2 > 255 - deltaPW)
+            { 
+                if (amp2 < 80)
+                {
+                    pw2 = 4;
+                    amp2 += deltaAmp;
+                }
+            }
+            else
+            {
+                pw2 += deltaPW;
+            }
+            pwBar2.currentPercent = pw2;
+            AmpBar2.currentPercent = amp2;
+            stim.StimulateAnalog("Index", true, pw2, amp2);
         }
-        pwBar.currentPercent = pw;
-        AmpBar.currentPercent = amp;
-        stim.StimulateAnalog("Thumb", true, pw, amp);
-        stim.StimulateAnalog("Index", true, pw, amp);
     }
 
     private void decreaseStim()
     {
-        if(pw<deltaPW)
+        if (ch1)
         {
-            pw = 255;
-            amp -= deltaAmp;
-        } else
-        {
-            pw -= deltaPW;
+            if (pw < deltaPW)
+            { 
+                if (amp > 1)
+                {
+                    pw = 255;
+                    amp -= deltaAmp;
+                }
+            }
+            else
+            {
+                pw -= deltaPW;
+            }
+            pwBar.currentPercent = pw;
+            AmpBar.currentPercent = amp;
+            stim.StimulateAnalog("Thumb", true, pw, amp);
+        } else {
+            if (pw2 < deltaPW)
+            {
+                if (amp2 > 1)
+                {
+                    pw2 = 255;
+                    amp2 -= deltaAmp;
+                }
+            }
+            else
+            {
+                pw2 -= deltaPW;
+            }
+            pwBar2.currentPercent = pw2;
+            AmpBar2.currentPercent = amp2;
+            stim.StimulateAnalog("Index", true, pw2, amp2);
         }
-        pwBar.currentPercent = pw;
-        AmpBar.currentPercent = amp;
-        stim.StimulateAnalog("Thumb", true, pw, amp);
-        stim.StimulateAnalog("Index", true, pw, amp);
     }
 
 
     public void resetAmp()
     {
-        amp = 3;
+        amp = 2;
+        amp2 = 2;
     }
 
 }
