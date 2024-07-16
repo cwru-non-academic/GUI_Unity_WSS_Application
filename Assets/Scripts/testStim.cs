@@ -39,6 +39,7 @@ public class testStim : MonoBehaviour
         } else if (Input.GetKeyDown(KeyCode.Escape))
         {
             ZeroStim();
+            stim.StopStimulation();
         } else if(Input.GetKeyDown(KeyCode.Space))
         {
             test();
@@ -99,6 +100,7 @@ public class testStim : MonoBehaviour
     public void ZeroStim()
     {
         stim.StimulateAnalog("Thumb", true, 0,0);
+        stim.StimulateAnalog("Index", true, 0, 0);
         stimOn.SetActive (false);
         stimOff.SetActive(true) ;
     }
@@ -106,6 +108,7 @@ public class testStim : MonoBehaviour
     public void test()
     {
         stim.StimulateAnalog("Thumb", true, pw, amp);
+        stim.StimulateAnalog("Index", true, pw, amp);
         stimOn.SetActive(true);
         stimOff.SetActive(false);
     }
@@ -123,6 +126,7 @@ public class testStim : MonoBehaviour
         pwBar.currentPercent = pw;
         AmpBar.currentPercent = amp;
         stim.StimulateAnalog("Thumb", true, pw, amp);
+        stim.StimulateAnalog("Index", true, pw, amp);
     }
 
     private void decreaseStim()
@@ -138,6 +142,7 @@ public class testStim : MonoBehaviour
         pwBar.currentPercent = pw;
         AmpBar.currentPercent = amp;
         stim.StimulateAnalog("Thumb", true, pw, amp);
+        stim.StimulateAnalog("Index", true, pw, amp);
     }
 
 

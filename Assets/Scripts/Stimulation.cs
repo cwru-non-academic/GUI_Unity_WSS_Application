@@ -180,7 +180,7 @@ public class Stimulation : MonoBehaviour
         yield return new WaitForSeconds(delay);
         WSS.create_schedule(1, 13, 170); //create a schedule to be sync with the 170 int signal  //13ms is period so freq of about 77Hz
         yield return new WaitForSeconds(delay);
-        WSS.creat_contact_config(1, new int[] { 0, 2, 2, 1 }, new int[] { 0, 1, 1, 2 }); //create a 2 cathodes and 1 anode for stim ch1
+        WSS.creat_contact_config(1, new int[] { 0, 0, 2, 1 }, new int[] { 0, 0, 1, 2 }); //create a 2 cathodes and 1 anode for stim ch1
         yield return new WaitForSeconds(delay);
         WSS.create_event(1, 0, 1, 0, 0, new int[] { 11, 11, 0, 0 }, new int[] { 11, 11, 0, 0 }, new int[] { 0, 0, 50 }); //create a 3mA square wave with 0 PW and 50us IPD for ch1
         yield return new WaitForSeconds(delay);
