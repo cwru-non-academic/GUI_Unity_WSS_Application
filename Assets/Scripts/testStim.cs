@@ -122,6 +122,7 @@ public class testStim : MonoBehaviour
         }
         pwBar.currentPercent = pw;
         AmpBar.currentPercent = amp;
+        stim.StimulateAnalog("Thumb", true, pw, amp);
     }
 
     private void decreaseStim()
@@ -136,6 +137,7 @@ public class testStim : MonoBehaviour
         }
         pwBar.currentPercent = pw;
         AmpBar.currentPercent = amp;
+        stim.StimulateAnalog("Thumb", true, pw, amp);
     }
 
 

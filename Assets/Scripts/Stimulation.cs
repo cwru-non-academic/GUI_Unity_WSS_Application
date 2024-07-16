@@ -242,8 +242,13 @@ public class Stimulation : MonoBehaviour
 
     //transform mA to 0 to 255 byte convetion
     private int AmpTo255Convention(int amp) {
-        float temp = (amp / 83.0f) * 255.0f;
-        return (int)temp;
+        if(amp <4)
+        {
+            return (int) Mathf.Pow(amp /0.0522f, 1/1.5466f)+1;
+        } else
+        {
+            return (int) ((amp + 1.7045f)/ 0.3396f)+1;
+        }
     }
 
     public void request_Configs(int command, int id)
