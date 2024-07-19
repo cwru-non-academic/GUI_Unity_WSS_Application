@@ -206,6 +206,13 @@ public class testStim : MonoBehaviour
     {
         amp = 2;
         amp2 = 2;
+        pw = 0;
+        pw2 = 0;
+        pwBar2.currentPercent = pw2;
+        AmpBar2.currentPercent = amp2;
+        pwBar.currentPercent = pw;
+        AmpBar.currentPercent = amp;
     }
+
 
 }
