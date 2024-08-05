@@ -4,6 +4,8 @@ using UnityEngine;
 using System.IO.Ports;
 using System;
 using System.Threading;
+using UnityEngine.PlayerLoop;
+using UnityEditor.PackageManager;
 
 public class Stimulation : MonoBehaviour
 {
@@ -220,8 +222,8 @@ public class Stimulation : MonoBehaviour
         {
             ready = false;
             StartCoroutine(DelayReadyCoroutine());
-        }
-        WSS.populateFRAMSettings();
+            WSS.populateFRAMSettings();
+        } 
     }
 
     public void load()
@@ -230,8 +232,8 @@ public class Stimulation : MonoBehaviour
         {
             ready = false;
             StartCoroutine(DelayReadyCoroutine());
+            WSS.populateBoardSettings();
         }
-        WSS.populateBoardSettings();
     }
 
     //deprecated as stream command now handles both PW and AMP
@@ -257,8 +259,8 @@ public class Stimulation : MonoBehaviour
         {
             ready = false;
             StartCoroutine(DelayReadyCoroutine());
+            WSS.request_configs(command, id);
         }
-        WSS.request_configs(command, id);
     }
 
     public void UpdateIPD(int IPD) // in us (0 to 1000us)
@@ -284,12 +286,69 @@ public class Stimulation : MonoBehaviour
         {
             ready = false;
             StartCoroutine(DelayReadyCoroutine());
+            float temp = 1000.0f / FR;
+            int Freq = (int)temp; //in ms now
+                                  //sets PW to 0 too
+            WSS.stream_change(null, new int[] { 0, 0, 0 }, new int[] { Freq, Freq, Freq });
         }
-        float temp = 1000.0f / FR;
-        int Freq = (int) temp; //in ms now
-        //sets PW to 0 too
-        WSS.stream_change(null, new int[] { 0, 0, 0}, new int[] { Freq, Freq, Freq});
     } //max 1000ms for pw IPD
+
+    public void updateWaveform(int[] waveform, int eventID) {
+        if (ready)
+        {
+            ready = false;
+            WaveformBuilder stimShape = new WaveformBuilder(waveform);
+            StartCoroutine(UpdateWaveformCoroutine(stimShape, eventID));
+        }
+    }
+
+    //overload for loading from json functionality
+    public void updateWaveform(WaveformBuilder waveform, int eventID) 
+    {
+        if (ready)
+        {
+            ready = false;
+            WaveformBuilder stimShape = waveform;
+            StartCoroutine(UpdateWaveformCoroutine(stimShape, eventID));
+        }
+    }
+
+    public void loadWaveform(string fileName, int eventID)
+    {
+        try
+        {
+            Waveform shape = JsonUtility.FromJson<Waveform>(System.IO.File.ReadAllText(Application.streamingAssetsPath + "/" + fileName + "WF.json"));
+            updateWaveform(new WaveformBuilder(shape), eventID);
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogError("JSON loading error: " + ex.Message);
+        }
+    }
+
+    IEnumerator UpdateWaveformCoroutine(WaveformBuilder wave, int eventID)
+    {
+        float delay = 0.1f;
+        WSS.set_costume_waveform(1, wave.getCatShapeArray()[0..^24], 0);
+        yield return new WaitForSeconds(delay);
+        WSS.set_costume_waveform(1, wave.getCatShapeArray()[8..^16], 1);
+        yield return new WaitForSeconds(delay);
+        WSS.set_costume_waveform(1, wave.getCatShapeArray()[16..^8], 2);
+        yield return new WaitForSeconds(delay);
+        WSS.set_costume_waveform(1, wave.getCatShapeArray()[24..^0], 3);
+        yield return new WaitForSeconds(delay);
+        WSS.set_costume_waveform(2, wave.getAnodicShapeArray()[0..^24], 0);
+        yield return new WaitForSeconds(delay);
+        WSS.set_costume_waveform(2, wave.getAnodicShapeArray()[8..^16], 1);
+        yield return new WaitForSeconds(delay);
+        WSS.set_costume_waveform(2, wave.getAnodicShapeArray()[16..^8], 2);
+        yield return new WaitForSeconds(delay);
+        WSS.set_costume_waveform(2, wave.getAnodicShapeArray()[24..^0], 3);
+        yield return new WaitForSeconds(delay);
+        WSS.edit_event_shape(eventID, 10, 11);
+        yield return new WaitForSeconds(delay);
+        ready = true;
+    }
 
     IEnumerator DelayReadyCoroutine()
     {

@@ -601,38 +601,13 @@ public class SerialToWSS
     }
 
     //costumizable waveform upload
-    public void set_costume_waveform(int slot, int[] waveform)
+    public void set_costume_waveform(int slot, int[] waveform, int msgNumber)//waveform is an array of 32 bytes 0 to 255 but only 8 can be sent a time call this method 4 times with coresponding delays in between
     {
         int wfIndex = 0;
-        byte[] data = new byte[] { 0x9D, 0x00, 0x00,  0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
-        for(int i = 3; i < data.Length; i+=2)
-        {
-            data[i] = BitConverter.GetBytes(waveform[wfIndex])[1];
-            data[i + 1] = BitConverter.GetBytes(waveform[wfIndex])[0];
-            wfIndex++;
-        }
-        data[1] = BitConverter.GetBytes(data.Length - 2)[0];
-        msg_builder(data);
-        data[2] = 0x01;
-        for (int i = 3; i < data.Length; i += 2)
-        {
-            data[i] = BitConverter.GetBytes(waveform[wfIndex])[1];
-            data[i + 1] = BitConverter.GetBytes(waveform[wfIndex])[0];
-            wfIndex++;
-        }
-        data[1] = BitConverter.GetBytes(data.Length - 2)[0];
-        msg_builder(data);
-        data[2] = 0x02;
-        for (int i = 3; i < data.Length; i += 2)
-        {
-            data[i] = BitConverter.GetBytes(waveform[wfIndex])[1];
-            data[i + 1] = BitConverter.GetBytes(waveform[wfIndex])[0];
-            wfIndex++;
-        }
-        data[1] = BitConverter.GetBytes(data.Length - 2)[0];
-        msg_builder(data);
-        data[2] = 0x03;
-        for (int i = 3; i < data.Length; i += 2)
+        byte[] data = new byte[] { 0x9D, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+        data[2] = BitConverter.GetBytes(slot)[0];
+        data[3] = BitConverter.GetBytes(msgNumber)[0];
+        for (int i = 4; i < data.Length; i+=2)
         {
             data[i] = BitConverter.GetBytes(waveform[wfIndex])[1];
             data[i + 1] = BitConverter.GetBytes(waveform[wfIndex])[0];
