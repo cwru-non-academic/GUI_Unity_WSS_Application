@@ -1,0 +1,3 @@
+[submodule "Assets/SubModules/WSSInterfacingModule"]
+	path = Assets/SubModules/WSSInterfacingModule
+	url = https://github.com/cwru-non-academic/WSSInterfacingCode
