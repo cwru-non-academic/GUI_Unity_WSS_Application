@@ -12,6 +12,11 @@ public class testStim : MonoBehaviour
     [SerializeField] private ProgressBar AmpBar;
     [SerializeField] private ProgressBar pwBar2;
     [SerializeField] private ProgressBar AmpBar2;
+    [SerializeField] private ProgressBar pwBar3;
+    [SerializeField] private ProgressBar AmpBar3;
+    [SerializeField] private GameObject ch1Select;
+    [SerializeField] private GameObject ch2Select;
+    [SerializeField] private GameObject ch3Select;
     [SerializeField] private GameObject stimOn;
     [SerializeField] private GameObject stimOff;
 
@@ -19,12 +24,14 @@ public class testStim : MonoBehaviour
     private int pw = 0; //in us
     private int amp2 = 2;//in mA
     private int pw2 = 0; //in us
+    private int amp3 = 2;//in mA
+    private int pw3 = 0; //in us
     private int deltaPW = 1;
     private int deltaAmp = 1;
     private bool upOn = false;
     private bool downOn = false;
     private float timeDelay = 0.1f; //in sec
-    private bool ch1;
+    private int currentCH;
 
     [SerializeField] private TMP_Text ready;
     // Start is called before the first frame update
@@ -34,7 +41,9 @@ public class testStim : MonoBehaviour
         AmpBar.currentPercent = amp;
         pwBar2.currentPercent = pw2;
         AmpBar2.currentPercent = amp2;
-        ch1 = true;
+        pwBar3.currentPercent = pw3;
+        AmpBar3.currentPercent = amp3;
+        currentCH = 1;
         stimOff.SetActive(true);
         stimOn.SetActive(false);
     }
@@ -76,9 +85,28 @@ public class testStim : MonoBehaviour
         {
             downOn = false;
             ZeroStim();
-        } else if(Input.GetKeyDown(KeyCode.LeftArrow) || Input.GetKeyDown(KeyCode.RightArrow))
+        } else if(Input.GetKeyDown(KeyCode.LeftArrow))
         {
-            ch1 = !ch1;
+            if (currentCH > 1)
+            {
+                currentCH--;
+            } else
+            {
+                currentCH = 3;
+            }
+            updateChanelSelect();
+        }
+        else if (Input.GetKeyDown(KeyCode.RightArrow))
+        {
+            if (currentCH <3)
+            {
+                currentCH++;
+            }
+            else
+            {
+                currentCH = 1;
+            }
+            updateChanelSelect();
         }
 
         if (stim.Ready())
@@ -109,10 +137,38 @@ public class testStim : MonoBehaviour
         }
     }
 
+    private void updateChanelSelect()
+    {
+        switch(currentCH)
+        {
+            case 1:
+                ch1Select.SetActive(true);
+                ch2Select.SetActive(false);
+                ch3Select.SetActive(false);
+                break;
+            case 2:
+                ch2Select.SetActive(true);
+                ch1Select.SetActive(false);
+                ch3Select.SetActive(false);
+                break;
+            case 3:
+                ch3Select.SetActive(true);
+                ch2Select.SetActive(false);
+                ch1Select.SetActive(false);
+                break;
+            default:
+                ch1Select.SetActive(true);
+                ch2Select.SetActive(false);
+                ch3Select.SetActive(false);
+                break;
+        }
+    }
+
     public void ZeroStim()
     {
         stim.StimulateAnalog("Thumb", true, 0,0);
         stim.StimulateAnalog("Index", true, 0, 0);
+        stim.StimulateAnalog("Middle", true, 0, 0);
         stimOn.SetActive (false);
         stimOff.SetActive(true) ;
     }
@@ -121,13 +177,14 @@ public class testStim : MonoBehaviour
     {
         stim.StimulateAnalog("Thumb", true, pw, amp);
         stim.StimulateAnalog("Index", true, pw2, amp2);
+        stim.StimulateAnalog("Middle", true, pw3, amp3);
         stimOn.SetActive(true);
         stimOff.SetActive(false);
     }
 
     private void increaseStim()
     {
-        if (ch1)
+        if (currentCH==1)
         {
             if (pw > 255 - deltaPW)
             {
@@ -144,7 +201,7 @@ public class testStim : MonoBehaviour
             pwBar.currentPercent = pw;
             AmpBar.currentPercent = amp;
             stim.StimulateAnalog("Thumb", true, pw, amp);
-        } else
+        } else if(currentCH==2)
         {
             if (pw2 > 255 - deltaPW)
             { 
@@ -161,12 +218,29 @@ public class testStim : MonoBehaviour
             pwBar2.currentPercent = pw2;
             AmpBar2.currentPercent = amp2;
             stim.StimulateAnalog("Index", true, pw2, amp2);
+        } else if (currentCH == 3)
+        {
+            if (pw3 > 255 - deltaPW)
+            {
+                if (amp3 < 80)
+                {
+                    pw3 = 4;
+                    amp3 += deltaAmp;
+                }
+            }
+            else
+            {
+                pw3 += deltaPW;
+            }
+            pwBar3.currentPercent = pw3;
+            AmpBar3.currentPercent = amp3;
+            stim.StimulateAnalog("Middle", true, pw3, amp3);
         }
     }
 
     private void decreaseStim()
     {
-        if (ch1)
+        if (currentCH==1)
         {
             if (pw < deltaPW)
             { 
@@ -183,7 +257,7 @@ public class testStim : MonoBehaviour
             pwBar.currentPercent = pw;
             AmpBar.currentPercent = amp;
             stim.StimulateAnalog("Thumb", true, pw, amp);
-        } else {
+        } else if(currentCH==2) {
             if (pw2 < deltaPW)
             {
                 if (amp2 > 1)
@@ -199,6 +273,23 @@ public class testStim : MonoBehaviour
             pwBar2.currentPercent = pw2;
             AmpBar2.currentPercent = amp2;
             stim.StimulateAnalog("Index", true, pw2, amp2);
+        } else if (currentCH == 3)
+        {
+            if (pw3 < deltaPW)
+            {
+                if (amp3 > 1)
+                {
+                    pw3 = 255;
+                    amp3 -= deltaAmp;
+                }
+            }
+            else
+            {
+                pw3 -= deltaPW;
+            }
+            pwBar3.currentPercent = pw3;
+            AmpBar3.currentPercent = amp3;
+            stim.StimulateAnalog("Middle", true, pw3, amp3);
         }
     }
 
@@ -207,12 +298,16 @@ public class testStim : MonoBehaviour
     {
         amp = 2;
         amp2 = 2;
+        amp3 = 2;
         pw = 0;
         pw2 = 0;
+        pw3 = 0;
         pwBar2.currentPercent = pw2;
         AmpBar2.currentPercent = amp2;
         pwBar.currentPercent = pw;
         AmpBar.currentPercent = amp;
+        pwBar3.currentPercent = pw3;
+        AmpBar3.currentPercent = amp3;
     }
 
 
