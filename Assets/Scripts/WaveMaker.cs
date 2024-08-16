@@ -11,7 +11,7 @@ using UnityEditor.PackageManager;
 public class WaveMaker : MonoBehaviour
 {
     private const int pointCount = 32;
-    private const float maxAmp = 65535.0f; //65535 or 255
+    private const float maxAmp = 2000.0f;
     private const int rateMultiplier = 5;
     private const float circleSize = 10f;
 
@@ -83,6 +83,12 @@ public class WaveMaker : MonoBehaviour
         else if (Input.mouseScrollDelta.y < 0)
         {
             changePointAmp(-1);
+        }else if (Input.GetKeyDown(KeyCode.Space))
+        {
+            stim.StimulateAnalog("Thumb", true, 30, 2);
+        } else if (Input.GetKeyUp(KeyCode.Space))
+        {
+            stim.StimulateAnalog("Thumb", true, 0, 0);
         }
     }
 
@@ -191,6 +197,7 @@ public class WaveMaker : MonoBehaviour
     public void upload()
     {
         WaveformBuilder w = new WaveformBuilder(wave);
+        Debug.Log(w.getArea().ToString());
         stim.updateWaveform(w, 1);
     }
 

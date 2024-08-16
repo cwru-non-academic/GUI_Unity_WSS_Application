@@ -19,6 +19,7 @@ public class testStim : MonoBehaviour
     [SerializeField] private GameObject ch3Select;
     [SerializeField] private GameObject stimOn;
     [SerializeField] private GameObject stimOff;
+    [SerializeField] private CustomDropdown shapes;
 
     private int amp =2;//in mA
     private int pw = 0; //in us
@@ -161,6 +162,21 @@ public class testStim : MonoBehaviour
                 ch2Select.SetActive(false);
                 ch3Select.SetActive(false);
                 break;
+        }
+    }
+
+    public void updateWaveform()
+    {
+        int shape = shapes.index;
+        if(shape==10)//trapezoid
+        {
+            Debug.Log("waveform currently not suported");
+        }else if(shape==11)//custom waveform
+        {
+            stim.updateWaveform(11, 12, currentCH);
+        }else if(shape<10)//other presets
+        {
+            stim.updateWaveform(shape, shape, currentCH);
         }
     }
 
