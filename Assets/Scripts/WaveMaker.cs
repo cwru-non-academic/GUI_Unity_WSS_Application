@@ -11,7 +11,7 @@ using UnityEditor.PackageManager;
 public class WaveMaker : MonoBehaviour
 {
     private const int pointCount = 32;
-    private const int maxAmp = 255;
+    private const float maxAmp = 65535.0f; //65535 or 255
     private const int rateMultiplier = 5;
     private const float circleSize = 10f;
 
@@ -21,6 +21,7 @@ public class WaveMaker : MonoBehaviour
     [SerializeField] private RectTransform container;
     [SerializeField] private Stimulation stim;
     [SerializeField] private CustomInputField fileInput;
+    [SerializeField] private GameObject selector;
 
     private int currentIndex =0;
     private float rate = 1.0f;
@@ -30,6 +31,7 @@ public class WaveMaker : MonoBehaviour
     private float verConv = 0;
     private float containerX = 0;
     private float containerY = 0;
+    private RectTransform selectorRT;
 
     // Start is called before the first frame update
     void Start()
@@ -49,6 +51,9 @@ public class WaveMaker : MonoBehaviour
             wave[i] = 0;
             UIdots[i] = CreatePoint(i+1, 0);
         }
+        selectorRT = selector.GetComponent<RectTransform>();
+        RectTransform dotT = UIdots[0].GetComponent<RectTransform>();
+        selectorRT.anchoredPosition = new Vector2(dotT.anchoredPosition.x, selectorRT.anchoredPosition.y);
         refreshRate();
         refreshValue();
     }
@@ -95,12 +100,19 @@ public class WaveMaker : MonoBehaviour
     public void changePoint()
     {
         currentIndex = points.index;
+        RectTransform dotT = UIdots[currentIndex].GetComponent<RectTransform>();
+        selectorRT.anchoredPosition = new Vector2(dotT.anchoredPosition.x, selectorRT.anchoredPosition.y);
         refreshValue();
     }
 
     public void updatePoints(int change)
     {
-        points.SetDropdownIndex(currentIndex+=change);
+        if((change > 0 && currentIndex<pointCount-1) || (change < 0 && currentIndex > 0))
+        {
+            points.SetDropdownIndex(currentIndex += change);
+            RectTransform dotT = UIdots[currentIndex].GetComponent<RectTransform>();
+            selectorRT.anchoredPosition = new Vector2(dotT.anchoredPosition.x, selectorRT.anchoredPosition.y);
+        }
         refreshValue();
     }
 
@@ -111,7 +123,7 @@ public class WaveMaker : MonoBehaviour
             wave[currentIndex] += (int)(polarity * rate * 0.01 * maxAmp);
             if (wave[currentIndex] > maxAmp)
             {
-                wave[currentIndex] = maxAmp;
+                wave[currentIndex] = (int) maxAmp;
             }
         } else if(polarity < 0 && wave[currentIndex] >0)
         {
@@ -185,6 +197,7 @@ public class WaveMaker : MonoBehaviour
     public void save()
     {
         WaveformBuilder w = new WaveformBuilder(wave);
+        Debug.Log(w.getArea().ToString());
         string toJsSON = JsonUtility.ToJson(w.getWave());
         System.IO.File.WriteAllText(Application.streamingAssetsPath + "/" + fileInput.inputText.text + "WF.json", toJsSON);
     }
