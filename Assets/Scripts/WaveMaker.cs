@@ -198,7 +198,7 @@ public class WaveMaker : MonoBehaviour
     {
         WaveformBuilder w = new WaveformBuilder(wave);
         Debug.Log(w.getArea().ToString());
-        stim.updateWaveform(w, 1);
+        stim.updateWaveform(1, w, 1);
     }
 
     public void save()

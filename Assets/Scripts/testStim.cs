@@ -173,10 +173,10 @@ public class testStim : MonoBehaviour
             Debug.Log("waveform currently not suported");
         }else if(shape==11)//custom waveform
         {
-            stim.updateWaveform(11, 12, currentCH);
+            stim.updateWaveform(1, 11, 12, currentCH);
         }else if(shape<10)//other presets
         {
-            stim.updateWaveform(shape, shape, currentCH);
+            stim.updateWaveform(1, shape, shape, currentCH);
         }
     }
 
