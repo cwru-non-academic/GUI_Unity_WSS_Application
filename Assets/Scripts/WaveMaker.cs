@@ -1,10 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using Michsky.MUIP;
 using TMPro;
-using System.ComponentModel;
-using System.Xml.Linq;
 using UnityEngine.UI;
 
 public class WaveMaker : MonoBehaviour

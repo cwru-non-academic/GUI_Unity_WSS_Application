@@ -21909,6 +21909,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1203967497}
   - component: {fileID: 1203967498}
+  - component: {fileID: 1203967499}
   m_Layer: 0
   m_Name: Stim
   m_TagString: Untagged
@@ -21944,9 +21945,25 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   forcePort: 0
-  testMode: 0
+  testMode: 1
   comPort: COM7
+  config: {fileID: 1203967499}
   started: 0
+--- !u!114 &1203967499
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1203967496}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e328646793e1ee4d8d36dff444dcec7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _config:
+    maxWSS: 1
+    sensationController: P
 --- !u!1 &1205122096
 GameObject:
   m_ObjectHideFlags: 0
@@ -25221,7 +25238,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1433057054}
   m_HandleRect: {fileID: 1433057053}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
