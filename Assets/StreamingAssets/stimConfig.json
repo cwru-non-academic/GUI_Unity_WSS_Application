@@ -5,7 +5,7 @@
     "PModeProportional": 1.0,
     "PModeOffsset": 0.0,
     "PDModeProportional": 0.8,
-    "PDModeDerivative": 0.8,
+    "PDModeDerivative": 0.2,
     "PDModeOffsset": 0.0
   },
   "stimParams": {

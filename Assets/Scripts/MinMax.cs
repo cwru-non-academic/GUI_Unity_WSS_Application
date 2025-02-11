@@ -17,6 +17,7 @@ public class MinMax : MonoBehaviour
     [SerializeField] private GameObject stimOn;
     [SerializeField] private GameObject stimOff;
     [SerializeField] private GameObject crabSerial;
+    [SerializeField] private GameObject fileReader;
     [SerializeField] private TMP_Text ready;
 
     private int amp = 2;//in mA
@@ -181,6 +182,7 @@ public class MinMax : MonoBehaviour
             AmpBar.currentPercent = amp;
             stim.StimulateAnalog("Thumb", true, pwMin, amp);
         }
+        stim.UpdateChannelParams("Thumb", pwMax, pwMin, amp);
     }
 
     private void decreaseStim()
@@ -205,6 +207,7 @@ public class MinMax : MonoBehaviour
             AmpBar.currentPercent = amp;
             stim.StimulateAnalog("Thumb", true, pwMin, amp);
         }
+        stim.UpdateChannelParams("Thumb", pwMax, pwMin, amp);
     }
 
     public void resetAmp()
@@ -215,6 +218,7 @@ public class MinMax : MonoBehaviour
         pwMinBar.currentPercent = pwMin;
         AmpBar.currentPercent = amp;
         pwMaxBar.currentPercent = pwMax;
+        stim.UpdateChannelParams("Thumb", pwMax, pwMin, amp);
     }
 
     public void link()
@@ -227,6 +231,9 @@ public class MinMax : MonoBehaviour
             if (linkType == "serial")
             {
                 crabSerial.SetActive(false);
+            } else if (linkType == "file")
+            {
+                fileReader.SetActive(false);
             }
         }
         else
@@ -237,6 +244,9 @@ public class MinMax : MonoBehaviour
             if (linkType == "serial")
             {
                 crabSerial.SetActive(true);
+            } else if (linkType == "file")
+            {
+                fileReader.SetActive(true);
             }
         }
     }
@@ -246,6 +256,9 @@ public class MinMax : MonoBehaviour
         if (input == "serial")
         {
             linkType = "serial";
+        } else if (input == "file")
+        {
+            linkType = "file";
         }
     }
 
@@ -253,13 +266,19 @@ public class MinMax : MonoBehaviour
     {
         if (linked)
         {
-            float pw= ((pwMax-pwMin)*input)+pwMin;
-            if (input > 1)
+            //float pw= ((pwMax-pwMin)*input)+pwMin;
+            if (input > 0.01)
             {
-                stim.StimulateAnalog("Thumb", true, (int)pw, amp);
+                stim.StimWithMode("Thumb", input);
+                //stim.StimulateAnalog("Thumb", true, (int)pw, amp);
+            } else
+            {
+                stim.StimWithMode("Thumb", 0);
+                //stim.StimulateAnalog("Thumb", true, 0, amp);
             }
-            stim.StimulateAnalog("Thumb", true, 0, amp);
         }
     }
+
+
 
 }
