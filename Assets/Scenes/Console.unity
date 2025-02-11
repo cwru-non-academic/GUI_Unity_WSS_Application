@@ -42935,7 +42935,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   forcePort: 0
-  testMode: 1
+  testMode: 0
   maxSetupTries: 5
   comPort: COM7
   config: {fileID: 1203967499}
