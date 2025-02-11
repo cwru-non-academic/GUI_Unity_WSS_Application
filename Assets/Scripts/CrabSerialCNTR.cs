@@ -2,9 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO.Ports;
 using UnityEditor;
-using UnityEditor.Experimental.GraphView;
 using UnityEngine;
-using static UnityEditor.PlayerSettings;
 
 public class CrabSerialCNTR : MonoBehaviour
 {
