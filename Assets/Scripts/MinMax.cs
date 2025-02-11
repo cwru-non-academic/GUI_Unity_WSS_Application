@@ -18,6 +18,7 @@ public class MinMax : MonoBehaviour
     [SerializeField] private GameObject stimOff;
     [SerializeField] private GameObject crabSerial;
     [SerializeField] private GameObject fileReader;
+    [SerializeField] private GameObject instructions;
     [SerializeField] private TMP_Text ready;
 
     private int amp = 2;//in mA
@@ -228,6 +229,7 @@ public class MinMax : MonoBehaviour
             linked = false;
             linkBTN.buttonText = "link";
             input.enabled = true;
+            instructions.SetActive(true);
             if (linkType == "serial")
             {
                 crabSerial.SetActive(false);
@@ -247,6 +249,7 @@ public class MinMax : MonoBehaviour
             } else if (linkType == "file")
             {
                 fileReader.SetActive(true);
+                instructions.SetActive(false);
             }
         }
     }
@@ -279,6 +282,10 @@ public class MinMax : MonoBehaviour
         }
     }
 
-
+    public string[] getStimParams()
+    {
+        string[] info = {pwMax.ToString(),pwMin.ToString(), amp.ToString()};
+        return info;
+    }
 
 }
