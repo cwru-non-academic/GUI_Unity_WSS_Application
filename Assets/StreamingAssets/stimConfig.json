@@ -9,8 +9,8 @@
     "PDModeOffsset": 0.0
   },
   "stimParams": {
-    "Ch1Max": 24.0,
-    "Ch1Min": 10.0,
+    "Ch1Max": 9.0,
+    "Ch1Min": 0.0,
     "Ch1Amp": 2.0,
     "Ch2Max": 0.0,
     "Ch2Min": 0.0,
