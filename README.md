@@ -1,15 +1,13 @@
 # Unity Project Setup (PLEASE READ)
 
-Before you clone the team repo, follow these instructions:
+Before you clone the repo, follow these instructions:
 
 1. Install GitHub Desktop, which also installs Git LFS: https://desktop.github.com (if you are using git via command line, install Git LFS: https://git-lfs.com)
-2. Submit your GitHub username in the Canvas assignment that is titled “Provide your GitHub account Name”
-3. You will receive an email with permission to access your team’s GitHub repo website
-4. (for GitHub Desktop) Goto the repo website, click the green Code button, and select “Open with GitHub Desktop” and clone the template project to your local machine
+2. (for GitHub Desktop) Goto the repo website, click the green Code button, and select “Open with GitHub Desktop” and clone the template project to your local machine
 (for git command line) Go to GitHub account settings and authorize your SSH key for CWRU SSO URL (https://docs.github.com/en/enterprise-cloud@latest/authentication/authenticating-with-saml-single-sign-on/authorizing-an-ssh-key-for-use-with-saml-single-sign-on) and then clone the final project template
 
 ## 5. Modify your GLOBAL .gitconfig
-Not everyone on your team may have the same path to UnityYAMLMerge (i.e. different operating systems or install locations). Because of this, we suggest you modify your local config to define the "unityyamlmerge" merge tool that this repository points to. To do this:
+Not everyone may have the same path to UnityYAMLMerge (i.e. different operating systems or install locations). Because of this, we suggest you modify your local config to define the "unityyamlmerge" merge tool that this repository points to. To do this:
 
 i. Reveal hidden files on your operating system
 - Windows 10: Open the File Explorer application and select View > Options > Change folder and search options and then select the View tab and, in Advanced settings, select Show hidden files, folders, and drives and OK
