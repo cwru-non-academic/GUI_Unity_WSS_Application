@@ -1,12 +1,7 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using Michsky.MUIP;
 using TMPro;
-using System.ComponentModel;
-using System.Xml.Linq;
 using UnityEngine.UI;
-using UnityEditor.PackageManager;
 
 public class WaveMaker : MonoBehaviour
 {
@@ -198,7 +193,7 @@ public class WaveMaker : MonoBehaviour
     {
         WaveformBuilder w = new WaveformBuilder(wave);
         Debug.Log(w.getArea().ToString());
-        stim.updateWaveform(w, 1);
+        stim.updateWaveform(1, w, 1);
     }
 
     public void save()

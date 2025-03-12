@@ -1,0 +1,40 @@
+{
+  "maxWSS": 1,
+  "sensationController": "P",
+  "constants": {
+    "PModeProportional": 1.0,
+    "PModeOffsset": 0.0,
+    "PDModeProportional": 0.8,
+    "PDModeDerivative": 0.2,
+    "PDModeOffsset": 0.0
+  },
+  "stimParams": {
+    "Ch1Max": 18.0,
+    "Ch1Min": 9.0,
+    "Ch1Amp": 2.0,
+    "Ch2Max": 0.0,
+    "Ch2Min": 0.0,
+    "Ch2Amp": 3.0,
+    "Ch3Max": 0.0,
+    "Ch3Min": 0.0,
+    "Ch3Amp": 3.0,
+    "Ch4Max": 0.0,
+    "Ch4Min": 0.0,
+    "Ch4Amp": 3.0,
+    "Ch5Max": 0.0,
+    "Ch5Min": 0.0,
+    "Ch5Amp": 3.0,
+    "Ch6Max": 0.0,
+    "Ch6Min": 0.0,
+    "Ch6Amp": 3.0,
+    "Ch7Max": 0.0,
+    "Ch7Min": 0.0,
+    "Ch7Amp": 3.0,
+    "Ch8Max": 0.0,
+    "Ch8Min": 0.0,
+    "Ch8Amp": 3.0,
+    "Ch9Max": 0.0,
+    "Ch9Min": 0.0,
+    "Ch9Amp": 3.0
+  }
+}

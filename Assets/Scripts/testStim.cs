@@ -1,13 +1,12 @@
 using Michsky.MUIP;
 using System.Collections;
-using System.Collections.Generic;
 using TMPro;
-using UnityEditor.PackageManager;
 using UnityEngine;
 
 public class testStim : MonoBehaviour
 {
     [SerializeField] private Stimulation stim;
+    [SerializeField] private StimUI stimUI;
     [SerializeField] private ProgressBar pwBar;
     [SerializeField] private ProgressBar AmpBar;
     [SerializeField] private ProgressBar pwBar2;
@@ -17,8 +16,6 @@ public class testStim : MonoBehaviour
     [SerializeField] private GameObject ch1Select;
     [SerializeField] private GameObject ch2Select;
     [SerializeField] private GameObject ch3Select;
-    [SerializeField] private GameObject stimOn;
-    [SerializeField] private GameObject stimOff;
     [SerializeField] private CustomDropdown shapes;
 
     private int amp =2;//in mA
@@ -34,7 +31,6 @@ public class testStim : MonoBehaviour
     private float timeDelay = 0.1f; //in sec
     private int currentCH;
 
-    [SerializeField] private TMP_Text ready;
     // Start is called before the first frame update
     void Start()
     {
@@ -45,8 +41,6 @@ public class testStim : MonoBehaviour
         pwBar3.currentPercent = pw3;
         AmpBar3.currentPercent = amp3;
         currentCH = 1;
-        stimOff.SetActive(true);
-        stimOn.SetActive(false);
     }
 
     // Update is called once per frame
@@ -68,8 +62,7 @@ public class testStim : MonoBehaviour
             ZeroStim();
         }else if (Input.GetKeyDown(KeyCode.UpArrow))
         {
-            stimOn.SetActive(true);
-            stimOff.SetActive(false);
+            stimUI.StimActive();
             upOn = true;
             StartCoroutine(UpCoroutine());
         } else if (Input.GetKeyUp(KeyCode.UpArrow))
@@ -78,8 +71,7 @@ public class testStim : MonoBehaviour
             ZeroStim() ;
         } else if( Input.GetKeyDown(KeyCode.DownArrow)) 
         {
-            stimOn.SetActive(true);
-            stimOff.SetActive(false);
+            stimUI.StimActive();
             downOn = true;
             StartCoroutine(DownCoroutine());
         } else if (Input.GetKeyUp(KeyCode.DownArrow))
@@ -108,14 +100,6 @@ public class testStim : MonoBehaviour
                 currentCH = 1;
             }
             updateChanelSelect();
-        }
-
-        if (stim.Ready())
-        {
-            ready.text = "Ready";
-        } else
-        {
-            ready.text = "Setting Up...";
         }
 
     }
@@ -173,10 +157,10 @@ public class testStim : MonoBehaviour
             Debug.Log("waveform currently not suported");
         }else if(shape==11)//custom waveform
         {
-            stim.updateWaveform(11, 12, currentCH);
+            stim.updateWaveform(1, 11, 12, currentCH);
         }else if(shape<10)//other presets
         {
-            stim.updateWaveform(shape, shape, currentCH);
+            stim.updateWaveform(1, shape, shape, currentCH);
         }
     }
 
@@ -185,8 +169,7 @@ public class testStim : MonoBehaviour
         stim.StimulateAnalog("Thumb", true, 0,0);
         stim.StimulateAnalog("Index", true, 0, 0);
         stim.StimulateAnalog("Middle", true, 0, 0);
-        stimOn.SetActive (false);
-        stimOff.SetActive(true) ;
+        stimUI.StimNotActive();
     }
     
     public void test()
@@ -194,8 +177,7 @@ public class testStim : MonoBehaviour
         stim.StimulateAnalog("Thumb", true, pw, amp);
         stim.StimulateAnalog("Index", true, pw2, amp2);
         stim.StimulateAnalog("Middle", true, pw3, amp3);
-        stimOn.SetActive(true);
-        stimOff.SetActive(false);
+        stimUI.StimActive();
     }
 
     private void increaseStim()
