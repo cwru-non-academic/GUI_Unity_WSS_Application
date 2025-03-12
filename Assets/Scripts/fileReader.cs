@@ -19,6 +19,8 @@ public class fileReader : MonoBehaviour
     private int trialIndex = 0;
     private int index = 0;
     private string docName;
+    private bool eventBPlayed = false;
+    private bool eventAPlayed = false;
 
     [SerializeField] private MinMax mmController;
     [SerializeField] private string eventsDocName;
@@ -29,6 +31,8 @@ public class fileReader : MonoBehaviour
     [SerializeField] private float max;
     [SerializeField] private float min;
     [SerializeField] private int freq;
+    [SerializeField] private GameObject responseRecorder;
+    [SerializeField] private GameObject eventLogger;
 
     private void OnEnable()
     {
@@ -51,7 +55,17 @@ public class fileReader : MonoBehaviour
             }
             
         }
-        
+
+        //play eventA
+        if (Input.GetKeyDown(KeyCode.F1))
+        {
+            EventA();
+        }
+        //play eventB
+        else if (Input.GetKeyDown(KeyCode.F2))
+        {
+            EventB();
+        }
     }
 
     public void StartEvent()
@@ -67,6 +81,7 @@ public class fileReader : MonoBehaviour
     {
         if (eventRunning)
         {
+            mmController.inputFloat(normalize(0));
             eventRunning = false;
         }
     }
@@ -199,6 +214,11 @@ public class fileReader : MonoBehaviour
             eventTxt.text = "Event: " + eventIndex.ToString();
             trialTxt.text = "Trial: " + trialIndex.ToString();
             changeFile(eventArray[trialIndex][eventIndex]);
+            eventAPlayed = false;
+            eventBPlayed = false;
+            responseRecorder.SetActive(false);
+            eventLogger.SetActive(false);
+            eventLogger.SetActive(true);
         }
         catch (System.Exception e)
         {
@@ -230,12 +250,18 @@ public class fileReader : MonoBehaviour
 
     public void EventA()
     {
+        if (eventRunning)
+        {
+            return;
+        }
         if (eventListLoaded && eventArray[trialIndex].Length > 0)
         {
             eventTxt.text = "Event: 0";
             trialTxt.text = "Trial: " + trialIndex.ToString();
             changeFile(eventArray[trialIndex][0]);
             StartEvent();
+            eventAPlayed = true;
+            enableResponse();
         } else
         {
             Debug.LogError("Event list not loaded or trial has insuficient events");
@@ -243,15 +269,37 @@ public class fileReader : MonoBehaviour
     }
     public void EventB()
     {
+        if (eventRunning)
+        {
+            return;
+        }
         if (eventListLoaded && eventArray[trialIndex].Length > 1)
         {
             eventTxt.text = "Event: 1";
             trialTxt.text = "Trial: " + trialIndex.ToString();
             changeFile(eventArray[trialIndex][1]);
             StartEvent();
+            eventBPlayed = true;
+            enableResponse();
         } else
         {
             Debug.LogError("Event list not loaded or trial has insuficient events");
+        }
+    }
+
+    public void eventRecorded()
+    {
+        StopEvent();
+        eventAPlayed = false;
+        eventBPlayed = false;
+        responseRecorder.SetActive(false);
+    }
+
+    private void enableResponse()
+    {
+        if(eventAPlayed && eventBPlayed) 
+        {
+            responseRecorder.SetActive(true);
         }
     }
 
@@ -265,6 +313,16 @@ public class fileReader : MonoBehaviour
             info[3] = "1";
         }
         return info;        
+    }
+
+    public bool getEventAStatus()
+    {
+        return eventAPlayed;
+    }
+
+    public bool getEventBStatus()
+    {
+        return eventBPlayed;
     }
 
     #endregion

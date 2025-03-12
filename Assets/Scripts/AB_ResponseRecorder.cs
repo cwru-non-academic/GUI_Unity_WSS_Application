@@ -14,9 +14,11 @@ public class AB_ResponseRecorder : MonoBehaviour
     private StringBuilder A_and_B_Logger;
     private string trialLogFile;
     public Stopwatch timer;
+    private bool endOfFile = false;
 
-    void Start()
+    void OnEnable()
     {
+        endOfFile = false;
         timer = new Stopwatch();
 
         // Start Unity timer
@@ -33,11 +35,29 @@ public class AB_ResponseRecorder : MonoBehaviour
         {
             creatLog();
         }
+        //record events with keys
+        else if (Input.GetKeyDown(KeyCode.Alpha1))
+        {
+            if(reader.getEventAStatus() && reader.getEventBStatus() && !endOfFile)
+            {
+                logEvent("A");
+            }
+        }
+        else if (Input.GetKeyDown(KeyCode.Alpha2))
+        {
+            if (reader.getEventAStatus() && reader.getEventBStatus() && !endOfFile)
+            {
+                logEvent("B");
+            }
+        }
     }
 
     private void OnDisable()
     {
-        creatLog();
+        if(!endOfFile)
+        {
+            creatLog();
+        }
     }
 
     public void logEvent(string AorB)
@@ -48,8 +68,10 @@ public class AB_ResponseRecorder : MonoBehaviour
         {
             responseABTN.SetActive(false);
             responseBBTN.SetActive(false);
+            endOfFile = true;
             creatLog();
         }
+        reader.eventRecorded();
     }
 
     private void logTrialData(string time, string trial, string eventA, string eventB, string response, string max, string min, string amp)
