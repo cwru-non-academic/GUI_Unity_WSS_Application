@@ -21,6 +21,8 @@ public class fileReader : MonoBehaviour
     private string docName;
     private bool eventBPlayed = false;
     private bool eventAPlayed = false;
+    private bool randMode=false;
+    private string randflag = "RAND";
 
     [SerializeField] private MinMax mmController;
     [SerializeField] private string eventsDocName;
@@ -30,6 +32,8 @@ public class fileReader : MonoBehaviour
     [SerializeField] private TMP_Text trialTxt;
     [SerializeField] private float max;
     [SerializeField] private float min;
+    [SerializeField] private float maxRandDur = 2.0f;
+    [SerializeField] private float minRandDur = 1.0f;
     [SerializeField] private int freq;
     [SerializeField] private GameObject responseRecorder;
     [SerializeField] private GameObject eventLogger;
@@ -42,18 +46,29 @@ public class fileReader : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (eventRunning && fileLoaded)
+        if (eventRunning && fileLoaded && !randMode)
         {
             index = index + (int)Mathf.Round(Time.deltaTime * freq);
             if (index < array.Length)
             {
-                mmController.inputFloat(normalize(float.Parse(array[index])));
-                inputTxt.text = "Input: " + normalize(float.Parse(array[index])).ToString("F3");
-            } else
+                if(array[index]== randflag)
+                {
+                    randMode = true;
+                    while (array[index] == randflag && index < array.Length)
+                    {
+                        index++;
+                    }
+                    StartCoroutine(RandDelay(Random.Range(minRandDur, maxRandDur)));
+                } else
+                {
+                    mmController.inputFloat(normalize(float.Parse(array[index])));
+                    inputTxt.text = "Input: " + normalize(float.Parse(array[index])).ToString("F3");
+                }
+            }
+            else
             {
                 StopEvent();
             }
-            
         }
 
         //play eventA
@@ -74,6 +89,7 @@ public class fileReader : MonoBehaviour
         {
             eventRunning = true;
             index = 0;
+            randMode = false;
         }
     }
 
@@ -83,6 +99,7 @@ public class fileReader : MonoBehaviour
         {
             mmController.inputFloat(normalize(0));
             eventRunning = false;
+            randMode = false;
         }
     }
 
@@ -242,6 +259,12 @@ public class fileReader : MonoBehaviour
     public int eventNumberInTrial()
     {
         return eventArray[trialIndex].Length;
+    }
+
+    IEnumerator RandDelay(float delay)
+    {
+        yield return new WaitForSecondsRealtime(delay);
+        randMode = false;
     }
 
     #region AandBComparisonMethods
