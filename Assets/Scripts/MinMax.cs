@@ -21,7 +21,7 @@ public class MinMax : MonoBehaviour
     [SerializeField] private GameObject instructions;
     [SerializeField] private TMP_Text ready;
 
-    private int amp = 2;//in mA
+    private int amp = 1;//in mA
     private int pwMin = 0; //in us
     private int pwMax = 0; //in us
     private int deltaPW = 1;
