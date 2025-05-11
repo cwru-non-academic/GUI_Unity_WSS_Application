@@ -100,15 +100,6 @@ public class MinMax : MonoBehaviour
                 MinSelect.SetActive(true);
             }
         }
-
-        if (stim.Ready())
-        {
-            ready.text = "Ready";
-        }
-        else
-        {
-            ready.text = "Setting Up...";
-        }
     }
 
     IEnumerator UpCoroutine()
@@ -213,7 +204,7 @@ public class MinMax : MonoBehaviour
 
     public void resetAmp()
     {
-        amp = 2;
+        amp = 1;
         pwMax = 4;
         pwMin = 4;
         pwMinBar.currentPercent = pwMin;

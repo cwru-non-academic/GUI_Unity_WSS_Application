@@ -11,6 +11,8 @@ public class StimUI : MonoBehaviour
     [SerializeField] private GameObject stimOn;
     [SerializeField] private GameObject stimOff;
 
+    private string currentMode = string.Empty;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -23,7 +25,10 @@ public class StimUI : MonoBehaviour
     {
         if (stim.Ready())
         {
-            ready.text = "Ready "+ stimCTRL._config.sensationController;
+            if(currentMode != stimCTRL._config.sensationController)
+            {
+                verifyNewMode();
+            }
         }
         else
         {
@@ -41,5 +46,18 @@ public class StimUI : MonoBehaviour
     {
         stimOn.SetActive(false);
         stimOff.SetActive(true);
+    }
+
+    private void verifyNewMode()
+    {
+        currentMode = stimCTRL._config.sensationController;
+        if (stim.isModeValid())
+        {
+            ready.text = "Ready " + currentMode;
+        }
+        else
+        {
+            ready.text = "StimMode not valid";
+        }
     }
 }
