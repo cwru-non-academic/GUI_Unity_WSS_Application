@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.IO.Ports;
 using UnityEngine;
 
-public class portScanner : MonoBehaviour
+public class portScannerMUIP : MonoBehaviour
 {
     enum SerialType
     {

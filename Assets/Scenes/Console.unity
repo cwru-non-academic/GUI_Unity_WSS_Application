@@ -39144,6 +39144,7 @@ MonoBehaviour:
   crab: {fileID: 1219984410}
   serialList: {fileID: 1084140608}
   serialType: 1
+  selectedPort: 
 --- !u!95 &1084140605
 Animator:
   serializedVersion: 5
@@ -67492,6 +67493,7 @@ MonoBehaviour:
   crab: {fileID: 0}
   serialList: {fileID: 1952490480}
   serialType: 0
+  selectedPort: 
 --- !u!95 &1952490477
 Animator:
   serializedVersion: 5
