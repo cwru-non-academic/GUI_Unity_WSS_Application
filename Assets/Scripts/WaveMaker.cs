@@ -80,10 +80,10 @@ public class WaveMaker : MonoBehaviour
             changePointAmp(-1);
         }else if (Input.GetKeyDown(KeyCode.Space))
         {
-            stim.StimulateAnalog("Thumb", true, 30, 2);
+            stim.StimulateAnalog("Thumb", 30, 2);
         } else if (Input.GetKeyUp(KeyCode.Space))
         {
-            stim.StimulateAnalog("Thumb", true, 0, 0);
+            stim.StimulateAnalog("Thumb", 0, 0);
         }
     }
 

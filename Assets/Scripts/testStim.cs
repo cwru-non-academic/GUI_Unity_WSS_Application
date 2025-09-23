@@ -166,17 +166,17 @@ public class testStim : MonoBehaviour
 
     public void ZeroStim()
     {
-        stim.StimulateAnalog("Thumb", true, 0,0);
-        stim.StimulateAnalog("Index", true, 0, 0);
-        stim.StimulateAnalog("Middle", true, 0, 0);
+        stim.StimulateAnalog("Thumb", 0,0);
+        stim.StimulateAnalog("Index", 0, 0);
+        stim.StimulateAnalog("Middle", 0, 0);
         stimUI.StimNotActive();
     }
     
     public void test()
     {
-        stim.StimulateAnalog("Thumb", true, pw, amp);
-        stim.StimulateAnalog("Index", true, pw2, amp2);
-        stim.StimulateAnalog("Middle", true, pw3, amp3);
+        stim.StimulateAnalog("Thumb", pw, amp);
+        stim.StimulateAnalog("Index", pw2, amp2);
+        stim.StimulateAnalog("Middle", pw3, amp3);
         stimUI.StimActive();
     }
 
@@ -198,7 +198,7 @@ public class testStim : MonoBehaviour
             }
             pwBar.currentPercent = pw;
             AmpBar.currentPercent = amp;
-            stim.StimulateAnalog("Thumb", true, pw, amp);
+            stim.StimulateAnalog("Thumb", pw, amp);
         } else if(currentCH==2)
         {
             if (pw2 > 255 - deltaPW)
@@ -215,7 +215,7 @@ public class testStim : MonoBehaviour
             }
             pwBar2.currentPercent = pw2;
             AmpBar2.currentPercent = amp2;
-            stim.StimulateAnalog("Index", true, pw2, amp2);
+            stim.StimulateAnalog("Index", pw2, amp2);
         } else if (currentCH == 3)
         {
             if (pw3 > 255 - deltaPW)
@@ -232,7 +232,7 @@ public class testStim : MonoBehaviour
             }
             pwBar3.currentPercent = pw3;
             AmpBar3.currentPercent = amp3;
-            stim.StimulateAnalog("Middle", true, pw3, amp3);
+            stim.StimulateAnalog("Middle", pw3, amp3);
         }
     }
 
@@ -254,7 +254,7 @@ public class testStim : MonoBehaviour
             }
             pwBar.currentPercent = pw;
             AmpBar.currentPercent = amp;
-            stim.StimulateAnalog("Thumb", true, pw, amp);
+            stim.StimulateAnalog("Thumb", pw, amp);
         } else if(currentCH==2) {
             if (pw2 < deltaPW)
             {
@@ -270,7 +270,7 @@ public class testStim : MonoBehaviour
             }
             pwBar2.currentPercent = pw2;
             AmpBar2.currentPercent = amp2;
-            stim.StimulateAnalog("Index", true, pw2, amp2);
+            stim.StimulateAnalog("Index", pw2, amp2);
         } else if (currentCH == 3)
         {
             if (pw3 < deltaPW)
@@ -287,7 +287,7 @@ public class testStim : MonoBehaviour
             }
             pwBar3.currentPercent = pw3;
             AmpBar3.currentPercent = amp3;
-            stim.StimulateAnalog("Middle", true, pw3, amp3);
+            stim.StimulateAnalog("Middle", pw3, amp3);
         }
     }
 

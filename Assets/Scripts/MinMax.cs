@@ -122,9 +122,9 @@ public class MinMax : MonoBehaviour
 
     public void ZeroStim()
     {
-        stim.StimulateAnalog("Thumb", true, 0, 0);
-        stim.StimulateAnalog("Index", true, 0, 0);
-        stim.StimulateAnalog("Middle", true, 0, 0);
+        stim.StimulateAnalog("Thumb", 0, 0);
+        stim.StimulateAnalog("Index", 0, 0);
+        stim.StimulateAnalog("Middle", 0, 0);
         stimOn.SetActive(false);
         stimOff.SetActive(true);
     }
@@ -133,10 +133,10 @@ public class MinMax : MonoBehaviour
     {
         if (maxOn)
         {
-            stim.StimulateAnalog("Thumb", true, pwMax, amp);
+            stim.StimulateAnalog("Thumb", pwMax, amp);
         } else
         {
-            stim.StimulateAnalog("Thumb", true, pwMin, amp);
+            stim.StimulateAnalog("Thumb", pwMin, amp);
         }
         stimOn.SetActive(true);
         stimOff.SetActive(false);
@@ -162,7 +162,7 @@ public class MinMax : MonoBehaviour
             }
             pwMaxBar.currentPercent = pwMax;
             AmpBar.currentPercent = amp;
-            stim.StimulateAnalog("Thumb", true, pwMax, amp);
+            stim.StimulateAnalog("Thumb", pwMax, amp);
         }
         else
         {
@@ -172,7 +172,7 @@ public class MinMax : MonoBehaviour
             }
             pwMinBar.currentPercent = pwMin;
             AmpBar.currentPercent = amp;
-            stim.StimulateAnalog("Thumb", true, pwMin, amp);
+            stim.StimulateAnalog("Thumb", pwMin, amp);
         }
         stim.UpdateChannelParams("Thumb", pwMax, pwMin, amp);
     }
@@ -187,7 +187,7 @@ public class MinMax : MonoBehaviour
             }
             pwMaxBar.currentPercent = pwMax;
             AmpBar.currentPercent = amp;
-            stim.StimulateAnalog("Thumb", true, pwMax, amp);
+            stim.StimulateAnalog("Thumb", pwMax, amp);
         }
         else
         {
@@ -197,7 +197,7 @@ public class MinMax : MonoBehaviour
             }
             pwMinBar.currentPercent = pwMin;
             AmpBar.currentPercent = amp;
-            stim.StimulateAnalog("Thumb", true, pwMin, amp);
+            stim.StimulateAnalog("Thumb", pwMin, amp);
         }
         stim.UpdateChannelParams("Thumb", pwMax, pwMin, amp);
     }
