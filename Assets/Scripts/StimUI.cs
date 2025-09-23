@@ -6,7 +6,6 @@ using UnityEngine;
 public class StimUI : MonoBehaviour
 {
     [SerializeField] private Stimulation stim;
-    [SerializeField] private StimConfigController stimCTRL;
     [SerializeField] private TMP_Text ready;
     [SerializeField] private GameObject stimOn;
     [SerializeField] private GameObject stimOff;
@@ -25,7 +24,7 @@ public class StimUI : MonoBehaviour
     {
         if (stim.Ready())
         {
-            if(currentMode != stimCTRL._config.sensationController)
+            if(currentMode != stim.GetStimConfigCTRL()._config.sensationController)
             {
                 verifyNewMode();
             }
@@ -50,7 +49,7 @@ public class StimUI : MonoBehaviour
 
     private void verifyNewMode()
     {
-        currentMode = stimCTRL._config.sensationController;
+        currentMode = stim.GetStimConfigCTRL()._config.sensationController;
         if (stim.isModeValid())
         {
             ready.text = "Ready " + currentMode;
