@@ -24,7 +24,7 @@ public class StimUI : MonoBehaviour
     {
         if (stim.Ready())
         {
-            if(currentMode != stim.GetStimConfigCTRL()._config.sensationController)
+            if(currentMode != stim.GetStimConfigCTRL().SensationController)
             {
                 verifyNewMode();
             }
@@ -49,7 +49,7 @@ public class StimUI : MonoBehaviour
 
     private void verifyNewMode()
     {
-        currentMode = stim.GetStimConfigCTRL()._config.sensationController;
+        currentMode = stim.GetStimConfigCTRL().SensationController;
         if (stim.isModeValid())
         {
             ready.text = "Ready " + currentMode;
