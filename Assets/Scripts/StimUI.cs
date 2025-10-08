@@ -22,9 +22,9 @@ public class StimUI : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (stim.Ready())
+        if (stim.Ready() || stim.Started())
         {
-            if(currentMode != stim.GetStimConfigCTRL().SensationController)
+            if(currentMode != stim.GetModelConfigCTRL().GetCalibMode())
             {
                 verifyNewMode();
             }
@@ -49,7 +49,7 @@ public class StimUI : MonoBehaviour
 
     private void verifyNewMode()
     {
-        currentMode = stim.GetStimConfigCTRL().SensationController;
+        currentMode = stim.GetModelConfigCTRL().GetCalibMode();
         if (stim.isModeValid())
         {
             ready.text = "Ready " + currentMode;
