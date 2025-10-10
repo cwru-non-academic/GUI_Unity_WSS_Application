@@ -2,8 +2,8 @@
   "stim": {
     "ch": {
       "1": {
-        "maxPW": 25.0,
-        "minPW": 15.0,
+        "maxPW": 4.0,
+        "minPW": 4.0,
         "amp": 1.0,
         "IPI": 10
       },
@@ -11,13 +11,13 @@
         "amp": 0.0,
         "minPW": 0,
         "maxPW": 0,
-        "IPI": 0
+        "IPI": 10
       },
       "3": {
         "amp": 0.0,
         "minPW": 0,
         "maxPW": 0,
-        "IPI": 0
+        "IPI": 10
       }
     }
   }
