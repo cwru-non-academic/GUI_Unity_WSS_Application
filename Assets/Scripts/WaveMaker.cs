@@ -2,6 +2,7 @@ using UnityEngine;
 using Michsky.MUIP;
 using TMPro;
 using UnityEngine.UI;
+using Wss.CoreModule;
 
 public class WaveMaker : MonoBehaviour
 {

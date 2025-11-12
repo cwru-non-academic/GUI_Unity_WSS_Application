@@ -2,22 +2,35 @@
   "stim": {
     "ch": {
       "1": {
-        "maxPW": 4.0,
-        "minPW": 4.0,
-        "amp": 1.0,
-        "IPI": 10
+        "ampMode": "PW",
+        "maxPW": 32.0,
+        "minPW": 8.0,
+        "maxPA": 60.0,
+        "minPA": 20.0,
+        "defaultPA": 1.0,
+        "defaultPW": 50,
+        "IPI": 10,
+        "amp": 1.0
       },
       "2": {
-        "amp": 0.0,
         "minPW": 0,
         "maxPW": 0,
-        "IPI": 10
+        "maxPA": 0.0,
+        "minPA": 0.0,
+        "defaultPA": 0.0,
+        "defaultPW": 0,
+        "ampMode": "PW",
+        "IPI": 0
       },
       "3": {
-        "amp": 0.0,
         "minPW": 0,
         "maxPW": 0,
-        "IPI": 10
+        "maxPA": 0.0,
+        "minPA": 0.0,
+        "defaultPA": 0.0,
+        "defaultPW": 0,
+        "ampMode": "PW",
+        "IPI": 0
       }
     }
   }
