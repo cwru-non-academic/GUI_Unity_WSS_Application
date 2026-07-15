@@ -28,6 +28,22 @@ public class WaveMaker : MonoBehaviour
     private float containerX = 0;
     private float containerY = 0;
     private RectTransform selectorRT;
+    private bool uiToolkitOwnsMomentaryInput;
+    private bool outputActive;
+
+    public int CurrentIndex => currentIndex;
+    public float Rate => rate;
+    public int PointCount => pointCount;
+    public float CurrentPercent => wave == null ? 0 : 100f * wave[currentIndex] / maxAmp;
+    public bool OutputActive => outputActive;
+
+    public void SetUIToolkitInputManaged(bool managed) => uiToolkitOwnsMomentaryInput = managed;
+
+    public float GetPointPercent(int index)
+    {
+        if (wave == null || index < 0 || index >= wave.Length) return 0;
+        return 100f * wave[index] / maxAmp;
+    }
 
     // Start is called before the first frame update
     void Start()
@@ -79,13 +95,25 @@ public class WaveMaker : MonoBehaviour
         else if (Input.mouseScrollDelta.y < 0)
         {
             changePointAmp(-1);
-        }else if (Input.GetKeyDown(KeyCode.Space))
+        }else if (!uiToolkitOwnsMomentaryInput && Input.GetKeyDown(KeyCode.Space))
         {
-            stim.StimulateAnalog("Thumb", 30, 2);
-        } else if (Input.GetKeyUp(KeyCode.Space))
+            TestPulse();
+        } else if (!uiToolkitOwnsMomentaryInput && Input.GetKeyUp(KeyCode.Space))
         {
-            stim.StimulateAnalog("Thumb", 0, 0);
+            ZeroStim();
         }
+    }
+
+    public void TestPulse()
+    {
+        stim.StimulateAnalog("Thumb", 30, 2);
+        outputActive = true;
+    }
+
+    public void ZeroStim()
+    {
+        stim.StimulateAnalog("Thumb", 0, 0);
+        outputActive = false;
     }
 
     private void addPoints()
@@ -105,6 +133,13 @@ public class WaveMaker : MonoBehaviour
         RectTransform dotT = UIdots[currentIndex].GetComponent<RectTransform>();
         selectorRT.anchoredPosition = new Vector2(dotT.anchoredPosition.x, selectorRT.anchoredPosition.y);
         refreshValue();
+    }
+
+    public void SelectPoint(int index)
+    {
+        if (wave == null || index < 0 || index >= pointCount) return;
+        int change = index - currentIndex;
+        if (change != 0) updatePoints(change);
     }
 
     public void updatePoints(int change)
@@ -190,6 +225,12 @@ public class WaveMaker : MonoBehaviour
         }
     }
 
+    public void LoadNamed(string fileName)
+    {
+        if (fileInput != null) fileInput.inputText.text = fileName;
+        load();
+    }
+
     public void upload()
     {
         WaveformBuilder w = new WaveformBuilder(wave);
@@ -203,6 +244,12 @@ public class WaveMaker : MonoBehaviour
         Debug.Log(w.getArea().ToString());
         string toJsSON = JsonUtility.ToJson(w.getWave());
         System.IO.File.WriteAllText(Application.streamingAssetsPath + "/" + fileInput.inputText.text + "WF.json", toJsSON);
+    }
+
+    public void SaveNamed(string fileName)
+    {
+        if (fileInput != null) fileInput.inputText.text = fileName;
+        save();
     }
 
     private void updateAlLUIDots()

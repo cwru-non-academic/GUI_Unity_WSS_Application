@@ -17,6 +17,7 @@ public class testStim : MonoBehaviour
     [SerializeField] private GameObject ch2Select;
     [SerializeField] private GameObject ch3Select;
     [SerializeField] private CustomDropdown shapes;
+    [SerializeField] private PulseWidthProfileController pulseWidthProfiles;
 
     private int amp =2;//in mA
     private int pw = 0; //in us
@@ -24,16 +25,35 @@ public class testStim : MonoBehaviour
     private int pw2 = 0; //in us
     private int amp3 = 2;//in mA
     private int pw3 = 0; //in us
-    private int deltaPW = 1;
     private int deltaAmp = 1;
     private bool upOn = false;
     private bool downOn = false;
     private float timeDelay = 0.1f; //in sec
+    private float heldSeconds;
     private int currentCH;
+    private bool uiToolkitOwnsMomentaryInput;
+    private bool outputActive;
+
+    public int CurrentChannel => currentCH;
+    public int PulseWidth1 => pw;
+    public int PulseWidth2 => pw2;
+    public int PulseWidth3 => pw3;
+    public int Amplitude1 => amp;
+    public int Amplitude2 => amp2;
+    public int Amplitude3 => amp3;
+    public bool OutputActive => outputActive;
+
+    public void SetUIToolkitInputManaged(bool managed) => uiToolkitOwnsMomentaryInput = managed;
 
     // Start is called before the first frame update
     void Start()
     {
+        if (pulseWidthProfiles == null)
+        {
+            Debug.LogError("testStim: connect Pulse Width Profile Controller in the Inspector.", this);
+            enabled = false;
+            return;
+        }
         pwBar.currentPercent = pw;
         AmpBar.currentPercent = amp;
         pwBar2.currentPercent = pw2;
@@ -41,29 +61,33 @@ public class testStim : MonoBehaviour
         pwBar3.currentPercent = pw3;
         AmpBar3.currentPercent = amp3;
         currentCH = 1;
+        ApplyPulseWidthMaximum(pulseWidthProfiles.ActiveMaximumPulseWidth);
+        pulseWidthProfiles.ActiveMaximumChanged += ClampPulseWidths;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.F1))
+        if (!uiToolkitOwnsMomentaryInput && Input.GetKeyDown(KeyCode.F1))
         {
             stim.StopStimulation();
-        } else if (Input.GetKeyDown(KeyCode.Escape))
+        } else if (!uiToolkitOwnsMomentaryInput && Input.GetKeyDown(KeyCode.Escape))
         {
             ZeroStim();
             stim.StopStimulation();
-        } else if(Input.GetKeyDown(KeyCode.Space))
+        } else if(!uiToolkitOwnsMomentaryInput && Input.GetKeyDown(KeyCode.Space))
         {
             test();
         }
-        else if (Input.GetKeyUp(KeyCode.Space))
+        else if (!uiToolkitOwnsMomentaryInput && Input.GetKeyUp(KeyCode.Space))
         {
             ZeroStim();
         }else if (Input.GetKeyDown(KeyCode.UpArrow))
         {
             stimUI.StimActive();
+            outputActive = true;
             upOn = true;
+            heldSeconds = 0;
             StartCoroutine(UpCoroutine());
         } else if (Input.GetKeyUp(KeyCode.UpArrow))
         {
@@ -72,7 +96,9 @@ public class testStim : MonoBehaviour
         } else if( Input.GetKeyDown(KeyCode.DownArrow)) 
         {
             stimUI.StimActive();
+            outputActive = true;
             downOn = true;
+            heldSeconds = 0;
             StartCoroutine(DownCoroutine());
         } else if (Input.GetKeyUp(KeyCode.DownArrow))
         {
@@ -109,6 +135,7 @@ public class testStim : MonoBehaviour
         while (upOn)
         {
             increaseStim() ;
+            heldSeconds += timeDelay;
             yield return new WaitForSeconds(timeDelay);
         }
     }
@@ -118,6 +145,7 @@ public class testStim : MonoBehaviour
         while (downOn)
         {
             decreaseStim();
+            heldSeconds += timeDelay;
             yield return new WaitForSeconds(timeDelay);
         }
     }
@@ -170,6 +198,7 @@ public class testStim : MonoBehaviour
         stim.StimulateAnalog("Index", 0, 0);
         stim.StimulateAnalog("Middle", 0, 0);
         stimUI.StimNotActive();
+        outputActive = false;
     }
     
     public void test()
@@ -178,13 +207,16 @@ public class testStim : MonoBehaviour
         stim.StimulateAnalog("Index", pw2, amp2);
         stim.StimulateAnalog("Middle", pw3, amp3);
         stimUI.StimActive();
+        outputActive = true;
     }
 
     private void increaseStim()
     {
+        int deltaPW = CurrentPulseWidthStep();
+        int pulseWidthMaximum = pulseWidthProfiles.ActiveMaximumPulseWidth;
         if (currentCH==1)
         {
-            if (pw > 255 - deltaPW)
+            if (pw > pulseWidthMaximum - deltaPW)
             {
                 if(amp < 80)
                 {
@@ -201,7 +233,7 @@ public class testStim : MonoBehaviour
             stim.StimulateAnalog("Thumb", pw, amp);
         } else if(currentCH==2)
         {
-            if (pw2 > 255 - deltaPW)
+            if (pw2 > pulseWidthMaximum - deltaPW)
             { 
                 if (amp2 < 80)
                 {
@@ -218,7 +250,7 @@ public class testStim : MonoBehaviour
             stim.StimulateAnalog("Index", pw2, amp2);
         } else if (currentCH == 3)
         {
-            if (pw3 > 255 - deltaPW)
+            if (pw3 > pulseWidthMaximum - deltaPW)
             {
                 if (amp3 < 80)
                 {
@@ -238,13 +270,15 @@ public class testStim : MonoBehaviour
 
     private void decreaseStim()
     {
+        int deltaPW = CurrentPulseWidthStep();
+        int pulseWidthMaximum = pulseWidthProfiles.ActiveMaximumPulseWidth;
         if (currentCH==1)
         {
             if (pw < deltaPW)
             { 
                 if (amp > 1)
                 {
-                    pw = 255;
+                    pw = pulseWidthMaximum;
                     amp -= deltaAmp;
                 }
             }
@@ -260,7 +294,7 @@ public class testStim : MonoBehaviour
             {
                 if (amp2 > 1)
                 {
-                    pw2 = 255;
+                    pw2 = pulseWidthMaximum;
                     amp2 -= deltaAmp;
                 }
             }
@@ -277,7 +311,7 @@ public class testStim : MonoBehaviour
             {
                 if (amp3 > 1)
                 {
-                    pw3 = 255;
+                    pw3 = pulseWidthMaximum;
                     amp3 -= deltaAmp;
                 }
             }
@@ -289,6 +323,52 @@ public class testStim : MonoBehaviour
             AmpBar3.currentPercent = amp3;
             stim.StimulateAnalog("Middle", pw3, amp3);
         }
+    }
+
+    public void SelectWaveform(int index)
+    {
+        if (shapes == null || index < 0 || index >= shapes.items.Count) return;
+        shapes.index = index;
+        shapes.SetDropdownIndex(index);
+    }
+
+    private int CurrentPulseWidthStep()
+    {
+        if (heldSeconds >= 3f) return 25;
+        if (heldSeconds >= 1.5f) return 10;
+        if (heldSeconds >= 0.5f) return 5;
+        return 1;
+    }
+
+    private void ClampPulseWidths(int maximum)
+    {
+        ApplyPulseWidthMaximum(maximum);
+        pw = Mathf.Min(pw, maximum);
+        pw2 = Mathf.Min(pw2, maximum);
+        pw3 = Mathf.Min(pw3, maximum);
+        pwBar.SetValue(pw);
+        pwBar2.SetValue(pw2);
+        pwBar3.SetValue(pw3);
+    }
+
+    private void OnDestroy()
+    {
+        if (pulseWidthProfiles != null)
+            pulseWidthProfiles.ActiveMaximumChanged -= ClampPulseWidths;
+    }
+
+    private void ApplyPulseWidthMaximum(int maximum)
+    {
+        SetBarMaximum(pwBar, maximum);
+        SetBarMaximum(pwBar2, maximum);
+        SetBarMaximum(pwBar3, maximum);
+    }
+
+    private static void SetBarMaximum(ProgressBar bar, int maximum)
+    {
+        bar.maxValue = maximum;
+        bar.valueLimit = maximum;
+        bar.UpdateUI();
     }
 
 

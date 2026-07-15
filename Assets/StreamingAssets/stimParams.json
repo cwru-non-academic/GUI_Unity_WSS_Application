@@ -3,8 +3,8 @@
     "ch": {
       "1": {
         "ampMode": "PW",
-        "maxPW": 32.0,
-        "minPW": 8.0,
+        "maxPW": 6.0,
+        "minPW": 0.0,
         "maxPA": 60.0,
         "minPA": 20.0,
         "defaultPA": 1.0,

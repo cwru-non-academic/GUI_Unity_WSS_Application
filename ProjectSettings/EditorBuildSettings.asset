@@ -8,4 +8,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Console.unity
     guid: 9fc0d4010bbf28b4594072e72b8655ab
+  - enabled: 1
+    path: Assets/Scenes/ConsoleUIToolkit.unity
+    guid: e849702cce3617a4390e78fa5df32682
   m_configObjects: {}

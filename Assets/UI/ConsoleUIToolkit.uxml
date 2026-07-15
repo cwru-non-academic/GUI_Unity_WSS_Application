@@ -1,0 +1,201 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <Style src="ConsoleUIToolkit.uss" />
+    <ui:VisualElement name="app" class="app-shell">
+        <ui:VisualElement class="topbar">
+            <ui:VisualElement class="brand-block">
+                <ui:Label text="WSS CONTROL" class="eyebrow" />
+                <ui:Label text="Stimulation Console" class="app-title" />
+            </ui:VisualElement>
+            <ui:VisualElement class="connection-block">
+                <ui:VisualElement name="ready-dot" class="status-dot status-dot--waiting" />
+                <ui:VisualElement>
+                    <ui:Label text="DEVICE STATUS" class="field-caption" />
+                    <ui:Label name="ready-label" text="Setting up…" class="status-copy" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+            <ui:VisualElement class="profile-fields">
+                <ui:VisualElement class="compact-field">
+                    <ui:Label text="MAX PULSE WIDTH" class="field-caption" />
+                    <ui:DropdownField name="max-pulse-dropdown" class="profile-dropdown" />
+                </ui:VisualElement>
+                <ui:VisualElement class="compact-field">
+                    <ui:Label text="EVENT RATIO" class="field-caption" />
+                    <ui:DropdownField name="ratio-dropdown" class="profile-dropdown" />
+                </ui:VisualElement>
+                <ui:Label name="profile-status" text="Active: 250 µs · 1:4" class="profile-status" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <ui:VisualElement class="body-row">
+            <ui:ScrollView name="sidebar-scroll" class="sidebar" horizontal-scroller-visibility="Hidden" vertical-scroller-visibility="Auto">
+                <ui:Label text="CONTROL MODE" class="sidebar-heading" />
+                <ui:Button name="amplitude-tab" text="Amplitude" class="nav-button nav-button--active" />
+                <ui:Button name="minmax-tab" text="Min / Max Setup" class="nav-button" />
+                <ui:Button name="waveform-tab" text="Waveform Designer" class="nav-button" />
+
+                <ui:VisualElement class="divider" />
+                <ui:Label text="STIMULATION" class="sidebar-heading" />
+                <ui:VisualElement name="stim-state" class="stim-state">
+                    <ui:VisualElement name="stim-dot" class="status-dot status-dot--off" />
+                    <ui:Label name="stim-state-label" text="Output inactive" />
+                </ui:VisualElement>
+                <ui:Label name="system-state-label" text="System stopped" class="system-state-label" />
+                <ui:Label name="system-command-label" text="Command queue idle" class="command-queue-label" />
+                <ui:Button name="start-button" text="Start system" class="action-button action-button--primary" />
+                <ui:Button name="stop-button" text="Stop system" class="action-button action-button--danger" />
+                <ui:Button name="zero-button" text="Zero output" class="action-button" />
+                <ui:Button name="reset-amps-button" text="Reset amplitudes" class="action-button" />
+                <ui:Button name="reset-radio-button" text="Reset radio" class="action-button" />
+
+                <ui:VisualElement class="sidebar-spacer" />
+                <ui:Label name="port-target-label" text="STIMULATOR PORT" class="sidebar-heading" />
+                <ui:Toggle name="force-port-toggle" label="Use selected port" class="port-toggle" />
+                <ui:DropdownField name="port-dropdown" class="port-dropdown" />
+                <ui:Label text="Hold SPACE for momentary output. Release to zero. ESC always zeros immediately and queues a system stop." class="safety-note" />
+            </ui:ScrollView>
+
+            <ui:ScrollView class="content-scroll">
+                <ui:VisualElement name="amplitude-panel" class="panel-stack">
+                    <ui:VisualElement class="section-heading-row">
+                        <ui:VisualElement>
+                            <ui:Label text="Manual amplitude calibration" class="section-title" />
+                            <ui:Label text="Tune pulse width and amplitude for each stimulation channel." class="section-subtitle" />
+                        </ui:VisualElement>
+                        <ui:Label text="ARROWS + SPACE" class="key-badge" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="channel-grid">
+                        <ui:VisualElement name="channel-1" class="metric-card metric-card--active">
+                            <ui:Label text="CHANNEL 1 · THUMB" class="card-kicker" />
+                            <ui:Label name="ch1-value" text="0 µs  ·  2 mA" class="metric-value" />
+                            <ui:ProgressBar name="ch1-pw" title="Pulse width" class="metric-progress" />
+                            <ui:ProgressBar name="ch1-amp" title="Amplitude" class="metric-progress metric-progress--amp" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="channel-2" class="metric-card">
+                            <ui:Label text="CHANNEL 2 · INDEX" class="card-kicker" />
+                            <ui:Label name="ch2-value" text="0 µs  ·  2 mA" class="metric-value" />
+                            <ui:ProgressBar name="ch2-pw" title="Pulse width" class="metric-progress" />
+                            <ui:ProgressBar name="ch2-amp" title="Amplitude" class="metric-progress metric-progress--amp" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="channel-3" class="metric-card">
+                            <ui:Label text="CHANNEL 3 · MIDDLE" class="card-kicker" />
+                            <ui:Label name="ch3-value" text="0 µs  ·  2 mA" class="metric-value" />
+                            <ui:ProgressBar name="ch3-pw" title="Pulse width" class="metric-progress" />
+                            <ui:ProgressBar name="ch3-amp" title="Amplitude" class="metric-progress metric-progress--amp" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:VisualElement class="card control-card">
+                        <ui:VisualElement class="control-row">
+                            <ui:VisualElement class="grow-field">
+                                <ui:Label text="WAVEFORM SHAPE" class="field-caption" />
+                                <ui:DropdownField name="shape-dropdown" />
+                            </ui:VisualElement>
+                            <ui:Button name="upload-shape-button" text="Upload to active channel" class="inline-button" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:Label text="↑ / ↓ adjusts the selected channel with accelerating steps. ← / → changes channel. Hold Space to test; release to zero output." class="instruction-card" />
+                </ui:VisualElement>
+
+                <ui:VisualElement name="minmax-panel" class="panel-stack hidden">
+                    <ui:VisualElement class="section-heading-row">
+                        <ui:VisualElement>
+                            <ui:Label text="Minimum / maximum calibration" class="section-title" />
+                            <ui:Label text="Define a safe working range and optionally drive it from serial or file input." class="section-subtitle" />
+                        </ui:VisualElement>
+                        <ui:Label text="LEFT / RIGHT SELECT" class="key-badge" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="minmax-grid">
+                        <ui:VisualElement name="max-card" class="metric-card metric-card--active">
+                            <ui:Label text="MAXIMUM" class="card-kicker" />
+                            <ui:Label name="max-value" text="0 µs" class="metric-value" />
+                            <ui:ProgressBar name="max-progress" title="Maximum pulse width" class="metric-progress" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="min-card" class="metric-card">
+                            <ui:Label text="MINIMUM" class="card-kicker" />
+                            <ui:Label name="min-value" text="0 µs" class="metric-value" />
+                            <ui:ProgressBar name="min-progress" title="Minimum pulse width" class="metric-progress" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="metric-card">
+                            <ui:Label text="AMPLITUDE" class="card-kicker" />
+                            <ui:Label name="minmax-amp-value" text="1 mA" class="metric-value" />
+                            <ui:ProgressBar name="minmax-amp-progress" title="Amplitude" class="metric-progress metric-progress--amp" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:VisualElement class="card control-card">
+                        <ui:VisualElement class="control-row">
+                            <ui:VisualElement class="grow-field">
+                                <ui:Label text="INPUT SOURCE" class="field-caption" />
+                                <ui:DropdownField name="input-dropdown" />
+                            </ui:VisualElement>
+                            <ui:Button name="link-button" text="Link input" class="inline-button" />
+                            <ui:Label name="link-status" text="Not linked" class="muted-label" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:VisualElement name="event-controls" class="card event-card hidden">
+                        <ui:VisualElement class="control-row">
+                            <ui:Label name="trial-label" text="Trial 0" class="event-counter" />
+                            <ui:Label name="event-label" text="Event 0" class="event-counter" />
+                            <ui:Button name="prev-trial-button" text="Previous trial" class="small-button" />
+                            <ui:Button name="next-trial-button" text="Next trial" class="small-button" />
+                            <ui:Button name="prev-event-button" text="Previous event" class="small-button" />
+                            <ui:Button name="next-event-button" text="Next event" class="small-button" />
+                            <ui:Button name="load-event-list-button" text="Reload event list" class="small-button" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="control-row event-actions">
+                            <ui:Button name="start-event-button" text="Start event" class="inline-button inline-button--success" />
+                            <ui:Button name="stop-event-button" text="Stop event" class="inline-button inline-button--danger" />
+                            <ui:Button name="event-a-button" text="Play Event A  (F1)" class="comparison-button comparison-button--a" />
+                            <ui:Button name="event-b-button" text="Play Event B  (F2)" class="comparison-button comparison-button--b" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="response-controls" class="response-controls hidden">
+                            <ui:Label text="Both previews completed. Record the stronger event:" class="response-prompt" />
+                            <ui:VisualElement class="control-row">
+                                <ui:Button name="response-a-button" text="A is stronger  (1)" class="comparison-button comparison-button--a" />
+                                <ui:Button name="response-b-button" text="B is stronger  (2)" class="comparison-button comparison-button--b" />
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:Label text="↑ / ↓ adjusts the active limit. ← / → toggles minimum and maximum. Hold Space to test the active limit; ESC immediately zeros and stops." class="instruction-card" />
+                </ui:VisualElement>
+
+                <ui:VisualElement name="waveform-panel" class="panel-stack hidden">
+                    <ui:VisualElement class="section-heading-row">
+                        <ui:VisualElement>
+                            <ui:Label text="Waveform designer" class="section-title" />
+                            <ui:Label text="Shape a 32-point relative-amplitude curve and upload it to the device." class="section-subtitle" />
+                        </ui:VisualElement>
+                        <ui:Label text="32 POINTS" class="key-badge" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="wave-card">
+                        <ui:VisualElement class="plot-y-labels">
+                            <ui:Label text="100%" />
+                            <ui:Label text="50%" />
+                            <ui:Label text="0%" />
+                        </ui:VisualElement>
+                        <ui:VisualElement name="wave-plot" class="wave-plot" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="card control-card">
+                        <ui:VisualElement class="control-row">
+                            <ui:Button name="previous-point-button" text="‹" class="step-button" />
+                            <ui:DropdownField name="point-dropdown" class="point-dropdown" />
+                            <ui:Button name="next-point-button" text="›" class="step-button" />
+                            <ui:Label name="point-value" text="0.00%" class="metric-inline" />
+                            <ui:Button name="decrease-point-button" text="− amplitude" class="small-button" />
+                            <ui:Button name="increase-point-button" text="+ amplitude" class="small-button" />
+                            <ui:Label name="rate-value" text="Rate 1.00%" class="metric-inline" />
+                            <ui:Button name="decrease-rate-button" text="Slower" class="small-button" />
+                            <ui:Button name="increase-rate-button" text="Faster" class="small-button" />
+                        </ui:VisualElement>
+                        <ui:VisualElement class="control-row file-row">
+                            <ui:TextField name="wave-file-field" label="Waveform file" class="grow-field" />
+                            <ui:Button name="load-wave-button" text="Load" class="small-button" />
+                            <ui:Button name="save-wave-button" text="Save" class="small-button" />
+                            <ui:Button name="upload-wave-button" text="Upload waveform" class="inline-button" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                    <ui:Label text="↑ / ↓ or the mouse wheel changes the active point. ← / → changes point. The green marker identifies the active point." class="instruction-card" />
+                </ui:VisualElement>
+            </ui:ScrollView>
+        </ui:VisualElement>
+        <ui:Label name="toast" text="" class="toast hidden" />
+    </ui:VisualElement>
+</ui:UXML>

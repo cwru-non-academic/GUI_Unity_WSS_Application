@@ -38,6 +38,11 @@ public class fileReader : MonoBehaviour
     [SerializeField] private GameObject responseRecorder;
     [SerializeField] private GameObject eventLogger;
 
+    public int EventIndex => eventIndex;
+    public int TrialIndex => trialIndex;
+    public bool EventRunning => eventRunning;
+    public bool EventListLoaded => eventListLoaded;
+
     private void OnEnable()
     {
         LoadEventList();

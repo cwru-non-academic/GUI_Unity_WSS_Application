@@ -20,46 +20,67 @@ public class MinMax : MonoBehaviour
     [SerializeField] private GameObject fileReader;
     [SerializeField] private GameObject instructions;
     [SerializeField] private TMP_Text ready;
+    [SerializeField] private PulseWidthProfileController pulseWidthProfiles;
 
     private int amp = 1;//in mA
     private int pwMin = 0; //in us
     private int pwMax = 0; //in us
-    private int deltaPW = 1;
     private int deltaAmp = 1;
     private bool upOn = false;
     private bool downOn = false;
     private float timeDelay = 0.1f; //in sec
+    private float heldSeconds;
     private bool maxOn = true;
     private bool linked = false;
     private string linkType = "Serial";
+    private bool uiToolkitOwnsMomentaryInput;
+    private bool outputActive;
+
+    public int MaximumPulseWidth => pwMax;
+    public int MinimumPulseWidth => pwMin;
+    public int Amplitude => amp;
+    public bool MaximumSelected => maxOn;
+    public bool Linked => linked;
+    public string InputType => linkType;
+    public bool OutputActive => outputActive;
+
+    public void SetUIToolkitInputManaged(bool managed) => uiToolkitOwnsMomentaryInput = managed;
 
     // Start is called before the first frame update
     void Start()
     {
+        if (pulseWidthProfiles == null)
+        {
+            Debug.LogError("MinMax: connect Pulse Width Profile Controller in the Inspector.", this);
+            enabled = false;
+            return;
+        }
         pwMinBar.currentPercent = pwMin;
         AmpBar.currentPercent = amp;
         pwMaxBar.currentPercent = pwMax;
         stimOff.SetActive(true);
         stimOn.SetActive(false);
+        ApplyPulseWidthMaximum(pulseWidthProfiles.ActiveMaximumPulseWidth);
+        pulseWidthProfiles.ActiveMaximumChanged += ClampPulseWidths;
     }
 
     // Update is called once per frame
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.F8))
+        if (!uiToolkitOwnsMomentaryInput && Input.GetKeyDown(KeyCode.F8))
         {
             stim.StopStimulation();
         }
-        else if (Input.GetKeyDown(KeyCode.Escape))
+        else if (!uiToolkitOwnsMomentaryInput && Input.GetKeyDown(KeyCode.Escape))
         {
             ZeroStim();
             stim.StopStimulation();
         }
-        else if (Input.GetKeyDown(KeyCode.Space))
+        else if (!uiToolkitOwnsMomentaryInput && Input.GetKeyDown(KeyCode.Space))
         {
             test();
         }
-        else if (Input.GetKeyUp(KeyCode.Space))
+        else if (!uiToolkitOwnsMomentaryInput && Input.GetKeyUp(KeyCode.Space))
         {
             ZeroStim();
         }
@@ -67,7 +88,9 @@ public class MinMax : MonoBehaviour
         {
             stimOn.SetActive(true);
             stimOff.SetActive(false);
+            outputActive = true;
             upOn = true;
+            heldSeconds = 0;
             StartCoroutine(UpCoroutine());
         }
         else if (Input.GetKeyUp(KeyCode.UpArrow))
@@ -79,7 +102,9 @@ public class MinMax : MonoBehaviour
         {
             stimOn.SetActive(true);
             stimOff.SetActive(false);
+            outputActive = true;
             downOn = true;
+            heldSeconds = 0;
             StartCoroutine(DownCoroutine());
         }
         else if (Input.GetKeyUp(KeyCode.DownArrow))
@@ -107,6 +132,7 @@ public class MinMax : MonoBehaviour
         while (upOn)
         {
             increaseStim();
+            heldSeconds += timeDelay;
             yield return new WaitForSeconds(timeDelay);
         }
     }
@@ -116,6 +142,7 @@ public class MinMax : MonoBehaviour
         while (downOn)
         {
             decreaseStim();
+            heldSeconds += timeDelay;
             yield return new WaitForSeconds(timeDelay);
         }
     }
@@ -127,6 +154,7 @@ public class MinMax : MonoBehaviour
         stim.StimulateAnalog("Middle", 0, 0);
         stimOn.SetActive(false);
         stimOff.SetActive(true);
+        outputActive = false;
     }
 
     public void test()
@@ -140,13 +168,16 @@ public class MinMax : MonoBehaviour
         }
         stimOn.SetActive(true);
         stimOff.SetActive(false);
+        outputActive = true;
     }
 
     private void increaseStim()
     {
+        int deltaPW = CurrentPulseWidthStep();
+        int pulseWidthMaximum = pulseWidthProfiles.ActiveMaximumPulseWidth;
         if (maxOn)
         {
-            if (pwMax > 255 - deltaPW)
+            if (pwMax > pulseWidthMaximum - deltaPW)
             {
                 if (amp < 80)
                 {
@@ -179,6 +210,7 @@ public class MinMax : MonoBehaviour
 
     private void decreaseStim()
     {
+        int deltaPW = CurrentPulseWidthStep();
         if (maxOn)
         {
             if (pwMax > pwMin+deltaPW)
@@ -200,6 +232,43 @@ public class MinMax : MonoBehaviour
             stim.StimulateAnalog("Thumb", pwMin, amp);
         }
         stim.UpdateChannelParams("Thumb", pwMax, pwMin, amp);
+    }
+
+    private int CurrentPulseWidthStep()
+    {
+        if (heldSeconds >= 3f) return 25;
+        if (heldSeconds >= 1.5f) return 10;
+        if (heldSeconds >= 0.5f) return 5;
+        return 1;
+    }
+
+    private void ClampPulseWidths(int maximum)
+    {
+        ApplyPulseWidthMaximum(maximum);
+        pwMax = Mathf.Min(pwMax, maximum);
+        pwMin = Mathf.Min(pwMin, pwMax);
+        pwMaxBar.SetValue(pwMax);
+        pwMinBar.SetValue(pwMin);
+        stim.UpdateChannelParams("Thumb", pwMax, pwMin, amp);
+    }
+
+    private void OnDestroy()
+    {
+        if (pulseWidthProfiles != null)
+            pulseWidthProfiles.ActiveMaximumChanged -= ClampPulseWidths;
+    }
+
+    private void ApplyPulseWidthMaximum(int maximum)
+    {
+        SetBarMaximum(pwMinBar, maximum);
+        SetBarMaximum(pwMaxBar, maximum);
+    }
+
+    private static void SetBarMaximum(ProgressBar bar, int maximum)
+    {
+        bar.maxValue = maximum;
+        bar.valueLimit = maximum;
+        bar.UpdateUI();
     }
 
     public void resetAmp()
@@ -264,10 +333,12 @@ public class MinMax : MonoBehaviour
             if (input > 0.01)
             {
                 stim.StimWithMode("Thumb", input);
+                outputActive = true;
                 //stim.StimulateAnalog("Thumb", true, (int)pw, amp);
             } else
             {
                 stim.StimWithMode("Thumb", 0);
+                outputActive = false;
                 //stim.StimulateAnalog("Thumb", true, 0, amp);
             }
         }

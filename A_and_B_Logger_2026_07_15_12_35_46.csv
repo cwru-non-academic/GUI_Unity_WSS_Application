@@ -1,0 +1,6 @@
+Time,Trial,EventA,EventB,Response,Max,Min,Amp,
+25.0295332,0,Normalized_Derivative_Ramp_100mmpersec,Normalized_Derivative_Ramp_75mmpersec,A,30,20,1,
+39.7703723,1,HF_DP_100mmpersec,HF_DP_75mmpersec,B,30,20,1,
+45.9937521,2,HF_DP_100mmpersec,HF_DP_75mmpersec,A,30,20,1,
+57.9691955,3,Normalized_Ramp_25mmpersec,Normalized_Ramp_8mmpersec,B,30,20,1,
+
