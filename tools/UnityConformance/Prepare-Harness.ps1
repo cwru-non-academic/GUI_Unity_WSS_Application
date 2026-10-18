@@ -63,10 +63,11 @@ foreach ($directory in @($runtime, $tests, (Join-Path $target 'Packages'), (Join
     New-Item -ItemType Directory -Path $directory -Force | Out-Null
 }
 $wrapper = if ($WrapperRoot) { [IO.Path]::GetFullPath($WrapperRoot) } else { Join-Path $appRoot 'Assets/SubModules/WSSInterfacingModule' }
-foreach ($name in @('Stimulation.cs','StimualtionParams.cs','StimulationBasic.cs','WssTransportSupport.cs')) {
+foreach ($name in @('Stimulation.cs','Stimulation.Commands.cs','Stimulation.Stack.cs','StimualtionParams.cs','StimulationBasic.cs','WssTransportSupport.cs')) {
     Copy-Item -LiteralPath (Join-Path $wrapper "UnityImplementation/$name") -Destination $runtime
 }
 Copy-Item -LiteralPath (Join-Path $appRoot 'Assets/Scripts/Diagnostics/WssConformanceController.cs') -Destination $runtime
+Copy-Item -LiteralPath (Join-Path $appRoot 'Assets/Scripts/Diagnostics/WssConformanceController.Unity.cs') -Destination $runtime
 if ($ProjectionRoot) {
     # Candidate mode never copies committed DLLs: only the verified fresh projection.
     $plugins = Join-Path $runtime 'Plugins/WSS_Core_Interface'

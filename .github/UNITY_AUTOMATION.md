@@ -1,52 +1,42 @@
-# GUI Unity propagation — prepared, gated
+# GUI conformance automation
 
-This repository targets **dev**, matching the current C# wrapper/CLI cascade.
-GitHub-hosted CI is allowed; Codex development remains local Windows. The user uses
-Unity Personal only. No supported unattended hosted Personal activation route was
-verified, so the prepared workflows fail explicitly rather than accept a skipped
-Unity test. No local runner or manual-evidence handoff has been selected or added.
+**GUI CI** and **WSS GUI preflight** emit **GUI general conformance**. Automated
+acceptance runs the same ten canonical cases and eighteen unchanged assertion
+expressions in ordinary .NET9, without starting or activating Unity.
 
-Prepared paths:
+The actual path is canonical fixture -> .NET scheduler -> shared production
+`WssConformanceController` forwarding methods -> shared production `Stimulation`
+commands/mappings -> shared Core/Params/Model stack -> `EmulatedWssTransport` ->
+existing Core observation/evaluation framework. There are no UnityEngine stubs,
+new expected values or independent case suite. This diagnostic entry point does
+not exercise the UI managers; their direct Stimulation command implementation is
+the same shared source tested here.
 
-- `workflows/unity-ci.yml`: committed gitlink/dependency acceptance; stable PR check
-  **GUI general conformance**.
-- `workflows/wss-preflight.yml`: exact Core candidate plus immutable wrapper/GUI
-  source acceptance; stable evidence check **GUI general conformance**.
-- `workflows/promote-integration.yml`: validate both Unity preflights, actual reviewed
-  wrapper merge and normal wrapper CI, then open/reuse a gitlink-only dev PR. No merge.
-- `unity-ci.json`: pinned2022.3.62f3/UTF1.1.33/fixture/case contract; explicit
-  unapproved baseline and pending hosted-license state.
-- `../tools/UnityConformance/Prepare-Harness.ps1`: retains the passing fixture;
-  accepts an explicit wrapper root and a fresh candidate-only projection so
-  committed stale DLLs cannot enter candidate validation.
+`WssConformanceController.cs` contains the shared forwarding/disposal guard code.
+`WssConformanceController.Unity.cs` supplies the existing inactive GameObject host;
+`tools/UnityConformance/WssConformanceController.DotNet.cs` supplies the .NET host.
+The original constructor API and Unity source GUID remain intact.
 
-Shared definitions and scripts belong to **Unity_WSS_Integration_Lib**, under
-`.github/workflows/_unity-validation.yml` and `.github/scripts/`. The GUI uses trusted
-wrapper dev tools, not code from a caller-nominated merge SHA. Source and tool
-checkouts are siblings so clean-source validation stays meaningful. Publication
-tokens are target-only and minted after preparation/provenance validation.
+The GUI's exact mode160000 wrapper gitlink selects its .NET tooling and production
+source; the pinned C# fixture commit/hash selects the unchanged cases. Normal CI
+uses public read-only checkouts and requires no App secret or persistent local
+runner. Test projects/output are generated outside Assets and source checkouts.
+Successful hosted evidence explicitly says `execution: dotnet`,
+`unity_executed: false`; it cannot stand in for real Editor evidence.
 
-GUI dev pins the wrapper dev baseline after that exact commit is verified remotely
-fetchable. The wrapper preserves the newer local history, including the previously
-unavailable `ce6d9ef00fc2512540366b0bbe33217654b14566`. Review these dev baselines,
-make workflow definitions available on default branches through the user's manual
-main merges, and pin an accepted GUI harness SHA before enabling automation. Do not
-substitute older wrapper main. Baseline approval flags remain disabled.
+The manual `tools/UnityConformance/Prepare-Harness.ps1` still prepares the real
+Unity2022.3.62f3/UTF1.1.33 EditMode host, including both new shared source fragments
+and the Unity lifetime fragment. The earlier actual Editor run passed ten cases;
+a fresh manual import/run after the extraction remains outstanding. .NET CI does
+not establish Unity importer/assembly resolution, MonoBehaviour/serialization,
+scene/UI/input/rendering, player packaging or physical BLE/Serial behavior.
 
-Display names mirror the C# counterparts with GUI labels: **GUI CI**, **WSS GUI
-preflight**, and **Promote Integration submodule**. Both normal and candidate
-acceptance emit **GUI general conformance**; validators distinguish them by exact
-workflow path, event and source SHA. The Unity-specific filenames/schema roles do
-not change.
+Development and dependency promotion target **dev**. `baseline_ready` remains
+false for future candidate preflight/promotion approval. Candidate mode retains
+producer/artifact/projection/source/fixture hashes and fresh candidate-only DLLs;
+the full propagation flow remains gated on baseline approval and existing approved
+App configuration. Main merges, default-branch publication, secrets, permissions,
+runner installation and shipping releases were not performed.
 
-The same ten existing cases and eighteen assertion expressions run through the
-application conformance entry point and Unity wrapper. Actual local EditMode already
-passed all ten; hosted automation remains unexecuted. UI managers, player packaging,
-hardware and shipping releases are outside that guarantee. No new app suite or
-PlayMode CI was added.
-
-See the wrapper `.github/UNITY_AUTOMATION.md` for schema, source/resolver reuse,
-names-only configuration inventory, official Personal-license references, actual
-local static verification and the separately proposed WSSCore handoff. Do not add
-ruleset requirements expecting green Unity checks until the hosted execution and
-baseline blockers are resolved and the check names are proven by real runs.
+See the wrapper `.github/UNITY_AUTOMATION.md` for exact source/evidence contracts,
+check names, promotion prerequisites and manual Editor invocation.

@@ -52,11 +52,10 @@ For local execution, use the installed, Hub-activated Editor:
 Do not add `-quit` to the test invocation. A successful run must produce valid
 results with all ten catalog cases passing; missing XML or absent cases is not a
 pass. Use an outer process timeout in automation. Dev-targeted workflow definitions
-are now prepared in both Unity repositories, but remain explicitly gated: no supported
-unattended GitHub-hosted Unity Personal activation route was verified. GitHub-hosted
-CI is permitted by the user; the local-only restriction applies to Codex development.
-No runner or alternative approval handoff has been selected. See
-`../../.github/UNITY_AUTOMATION.md` and the wrapper's `.github/UNITY_AUTOMATION.md`.
+now run their shared command path in ordinary .NET without Unity activation.
+Candidate promotion remains separately gated on baseline approval. This manual
+Editor harness remains available and produces distinct actual Unity evidence.
+See `../../.github/UNITY_AUTOMATION.md` and the wrapper's `.github/UNITY_AUTOMATION.md`.
 
 `dependency-projection.json` records the selected accepted universal payload and
 15 projected DLL hashes. The full original payload remains in the reference CLI
@@ -91,6 +90,9 @@ trees or Linux backend were imported. Only Windows x64 is projected here.
   and `System.Security.Principal.Windows.dll.meta` to their committed importer
   settings/GUIDs. Their diff is empty. The corresponding DLL hashes and all 15
   projected binary hashes remain unchanged. No Git trust/ACL changes were made.
+
+The earlier real Editor result above predates the shared-source extraction. A fresh
+manual import/run of the split source is still outstanding.
 
 Original touched sources/displaced DLLs were preserved at
 `C:\Users\Owner\AppData\Local\Temp\wss-unity-before-4a2433b2da284714b7fc39ed92962cfb`.

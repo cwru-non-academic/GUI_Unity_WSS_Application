@@ -1,42 +1,22 @@
 using System;
-using UnityEngine;
 using Wss.Testing;
 
-/// <summary>Invokes the application's Unity WSS wrapper with the shared in-memory emulator.</summary>
+/// <summary>Routes the application's conformance calls through the real shared WSS wrapper.</summary>
 /// <remarks>
-/// Use on Unity's main thread. Call Initialize, advance Tick while awaiting observations,
+/// The Unity host requires its main thread; the .NET host serializes calls with its tick loop.
+/// Call Initialize, advance Tick while awaiting observations,
 /// and Dispose before removing fixture files. No scene or physical transport is activated.
 /// This entry point checks Core propagation; it does not exercise the UI managers.
 /// </remarks>
-public sealed class WssConformanceController : IDisposable
+public sealed partial class WssConformanceController : IDisposable
 {
-    private readonly GameObject _host;
     private readonly Stimulation _stimulation;
     private bool _disposed;
 
-    /// <summary>Creates an inactive host configured with the canonical scenario fixture directory.</summary>
-    /// <param name="configDirectory">Existing fixture directory containing Core and parameter JSON.</param>
-    public WssConformanceController(string configDirectory)
-    {
-        _host = new GameObject("WSS shared conformance");
-        _host.hideFlags = HideFlags.HideAndDontSave;
-        _host.SetActive(false); // Configure before any component can enter OnEnable.
-        try
-        {
-            _stimulation = _host.AddComponent<Stimulation>();
-            _stimulation.ConfigureConformance(configDirectory);
-        }
-        catch
-        {
-            UnityEngine.Object.DestroyImmediate(_host);
-            throw;
-        }
-    }
-
-    /// <summary>Initializes Core through the Unity wrapper without activating a scene.</summary>
+    /// <summary>Initializes Core through the shared wrapper without activating a scene.</summary>
     public void Initialize() { ThrowIfDisposed(); _stimulation.resetRadio(); }
 
-    /// <summary>Advances the emulator through the wrapper on Unity's main thread.</summary>
+    /// <summary>Advances the emulator through the wrapper on the host's serialized execution context.</summary>
     public void Tick() { ThrowIfDisposed(); _stimulation.TickConformance(); }
 
     /// <summary>Gets whether the wrapper reports readiness.</summary>
@@ -77,13 +57,13 @@ public sealed class WssConformanceController : IDisposable
     public void StopStimulation(int target)
     { ThrowIfDisposed(); _stimulation.StopStimulation(target); }
 
-    /// <summary>Disposes Core and removes the inactive host on Unity's main thread.</summary>
+    /// <summary>Disposes Core and releases the platform host.</summary>
     public void Dispose()
     {
         if (_disposed) return;
         _disposed = true;
         try { _stimulation.DisposeConformance(); }
-        finally { UnityEngine.Object.DestroyImmediate(_host); }
+        finally { DisposeHost(); }
     }
 
     private void ThrowIfDisposed()
