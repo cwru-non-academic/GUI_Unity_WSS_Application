@@ -1,4 +1,4 @@
-name: CLI CI
+name: GUI CI
 on:
   push:
     branches: [dev]
@@ -20,7 +20,7 @@ jobs:
     secrets:
       WSS_GITHUB_APP_PRIVATE_KEY: ${{ secrets.WSS_GITHUB_APP_PRIVATE_KEY }}
   acceptance:
-    name: CLI general conformance
+    name: GUI general conformance
     if: always()
     needs: validate
     runs-on: ubuntu-latest

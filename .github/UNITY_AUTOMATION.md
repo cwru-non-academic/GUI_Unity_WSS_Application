@@ -9,9 +9,9 @@ Unity test. No local runner or manual-evidence handoff has been selected or adde
 Prepared paths:
 
 - `workflows/unity-ci.yml`: committed gitlink/dependency acceptance; stable PR check
-  **CLI general conformance**.
+  **GUI general conformance**.
 - `workflows/wss-preflight.yml`: exact Core candidate plus immutable wrapper/GUI
-  source acceptance; stable evidence check **CLI general conformance**.
+  source acceptance; stable evidence check **GUI general conformance**.
 - `workflows/promote-integration.yml`: validate both Unity preflights, actual reviewed
   wrapper merge and normal wrapper CI, then open/reuse a gitlink-only dev PR. No merge.
 - `unity-ci.json`: pinned2022.3.62f3/UTF1.1.33/fixture/case contract; explicit
@@ -33,9 +33,9 @@ make workflow definitions available on default branches through the user's manua
 main merges, and pin an accepted GUI harness SHA before enabling automation. Do not
 substitute older wrapper main. Baseline approval flags remain disabled.
 
-Display names intentionally mirror the C# counterparts: **CLI CI**, **WSS CLI
+Display names mirror the C# counterparts with GUI labels: **GUI CI**, **WSS GUI
 preflight**, and **Promote Integration submodule**. Both normal and candidate
-acceptance emit **CLI general conformance**; validators distinguish them by exact
+acceptance emit **GUI general conformance**; validators distinguish them by exact
 workflow path, event and source SHA. The Unity-specific filenames/schema roles do
 not change.
 
