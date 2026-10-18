@@ -42,7 +42,6 @@ jobs:
             WSSCore
             Unity_WSS_Integration_Lib
             GUI_Unity_WSS_Application
-            CSharp_WSS_Integration_Lib
           permission-contents: read
           permission-actions: read
           permission-pull-requests: read
@@ -55,11 +54,33 @@ jobs:
           token: ${{ steps.read.outputs.token }}
           persist-credentials: false
 
-      - name: Verify exact candidate, both runtime preflights and sources
+      - name: Validate reviewed wrapper, candidate and no-op before dispatch credentials
+        id: candidate
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ steps.read.outputs.token }}
+          APPROVAL_JSON: ${{ inputs.approval_json }}
+          WRAPPER_MERGE_SHA: ${{ inputs.wrapper_sha }}
+          WRAPPER_PR: ${{ inputs.wrapper_pr }}
+        run: |
+          ./promotion-tools/.github/scripts/Prepare-UnityPromotion.ps1 -Role gui -RepositoryRoot "$env:GITHUB_WORKSPACE/source" -WorkRoot "$env:RUNNER_TEMP/unity-validation" -ApprovalJson $env:APPROVAL_JSON -WrapperMergeSha $env:WRAPPER_MERGE_SHA -WrapperPr $env:WRAPPER_PR -ValidateOnly
+      - name: Mint GUI-only preflight dispatch token after merge validation
+        if: steps.candidate.outputs.no_op == 'false'
+        uses: actions/create-github-app-token@v2
+        id: preflight
+        with:
+          app-id: ${{ vars.WSS_GITHUB_APP_ID }}
+          private-key: ${{ secrets.WSS_GITHUB_APP_PRIVATE_KEY }}
+          owner: cwru-non-academic
+          repositories: GUI_Unity_WSS_Application
+          permission-actions: write
+      - name: Revalidate initial proof and execute actual merged-wrapper GUI preflight
+        if: steps.candidate.outputs.no_op == 'false'
         id: prepare
         shell: pwsh
         env:
           GH_TOKEN: ${{ steps.read.outputs.token }}
+          UNITY_PREFLIGHT_TOKEN: ${{ steps.preflight.outputs.token }}
           APPROVAL_JSON: ${{ inputs.approval_json }}
           WRAPPER_MERGE_SHA: ${{ inputs.wrapper_sha }}
           WRAPPER_PR: ${{ inputs.wrapper_pr }}
@@ -93,3 +114,4 @@ jobs:
             ${{ runner.temp }}/unity-promotion/approval.json
             ${{ runner.temp }}/unity-promotion/prepared.json
             ${{ runner.temp }}/unity-promotion/projection.json
+            ${{ runner.temp }}/unity-validation/prepared.json

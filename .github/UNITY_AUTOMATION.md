@@ -31,11 +31,15 @@ a fresh manual import/run after the extraction remains outstanding. .NET CI does
 not establish Unity importer/assembly resolution, MonoBehaviour/serialization,
 scene/UI/input/rendering, player packaging or physical BLE/Serial behavior.
 
-Development and dependency promotion target **dev**. `baseline_ready` remains
-false for future candidate preflight/promotion approval. Candidate mode retains
+Development and dependency promotion target **dev**. `baseline_ready` is true
+following approval of the real .NET path. Candidate mode retains
 producer/artifact/projection/source/fixture hashes and fresh candidate-only DLLs;
-the full propagation flow remains gated on baseline approval and existing approved
-App configuration. Main merges, default-branch publication, secrets, permissions,
+the full propagation flow requires default-branch workflow publication and existing
+approved App configuration. After a human wrapper dependency merge, a fresh GUI
+candidate preflight tests that exact merged wrapper and current GUI source before
+a GUI-only write token creates the gitlink-only PR. Exact reruns reuse an existing
+PR; conflicts stop without force push. Human merges remain required.
+Main merges, default-branch publication, secrets, permissions,
 runner installation and shipping releases were not performed.
 
 See the wrapper `.github/UNITY_AUTOMATION.md` for exact source/evidence contracts,
