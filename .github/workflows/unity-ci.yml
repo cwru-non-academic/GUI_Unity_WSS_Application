@@ -1,0 +1,31 @@
+name: GUI CI
+on:
+  push:
+    branches: [dev]
+  pull_request:
+    branches: [dev]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: unity-gui-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  validate:
+    uses: cwru-non-academic/Unity_WSS_Integration_Lib/.github/workflows/_unity-validation.yml@dev
+    with:
+      role: gui
+      mode: committed
+      gui_sha: ${{ github.sha }}
+    secrets:
+      WSS_GITHUB_APP_PRIVATE_KEY: ${{ secrets.WSS_GITHUB_APP_PRIVATE_KEY }}
+  acceptance:
+    name: GUI general conformance
+    if: always()
+    needs: validate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Require actual committed-state conformance
+        env:
+          VALIDATION_RESULT: ${{ needs.validate.result }}
+        run: test "$VALIDATION_RESULT" = success

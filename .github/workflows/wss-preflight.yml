@@ -1,0 +1,35 @@
+name: WSS GUI preflight
+run-name: WSS preflight ${{ fromJSON(inputs.candidate_json).run_id }} / ${{ inputs.correlation_id }}
+on:
+  workflow_dispatch:
+    inputs:
+      candidate_json: {description: Exact Core producer tuple, required: true, type: string}
+      wrapper_sha: {required: true, type: string}
+      gui_sha: {required: true, type: string}
+      correlation_id: {required: true, type: string}
+permissions:
+  contents: read
+concurrency:
+  group: unity-preflight-gui-${{ inputs.correlation_id }}
+  cancel-in-progress: false
+jobs:
+  validate:
+    uses: cwru-non-academic/Unity_WSS_Integration_Lib/.github/workflows/_unity-validation.yml@dev
+    with:
+      role: gui
+      mode: candidate
+      wrapper_sha: ${{ inputs.wrapper_sha }}
+      gui_sha: ${{ inputs.gui_sha }}
+      candidate_json: ${{ inputs.candidate_json }}
+    secrets:
+      WSS_GITHUB_APP_PRIVATE_KEY: ${{ secrets.WSS_GITHUB_APP_PRIVATE_KEY }}
+  acceptance:
+    name: GUI general conformance
+    if: always()
+    needs: validate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Reject skipped or failed prerequisite/conformance
+        env:
+          VALIDATION_RESULT: ${{ needs.validate.result }}
+        run: test "$VALIDATION_RESULT" = success

@@ -1,0 +1,117 @@
+name: Promote Integration submodule
+run-name: Promote Integration ${{ inputs.wrapper_sha }} / wss-${{ fromJSON(inputs.approval_json).candidate.run_id }}-${{ fromJSON(inputs.approval_json).candidate.artifact_id }}
+on:
+  workflow_dispatch:
+    inputs:
+      wrapper_sha: {required: true, type: string}
+      wrapper_pr: {required: true, type: string}
+      approval_json: {required: true, type: string}
+permissions:
+  contents: read
+concurrency:
+  group: unity-promote-gui-dev
+  cancel-in-progress: false
+jobs:
+  promote:
+    name: promote
+    runs-on: windows-2022
+    timeout-minutes: 90
+    steps:
+      - name: Require trusted dev event
+        shell: pwsh
+        run: |
+          if ($env:GITHUB_REF -cne 'refs/heads/dev' -or $env:GITHUB_EVENT_NAME -cne 'workflow_dispatch') { throw 'Only dev dispatch is accepted.' }
+      - uses: actions/checkout@v4
+        with:
+          path: source
+          fetch-depth: 0
+          lfs: true
+          persist-credentials: false
+      - name: Require candidate-promotion baseline approval
+        shell: pwsh
+        run: |
+          $config = Get-Content source/.github/unity-ci.json -Raw | ConvertFrom-Json
+          if (!$config.baseline_ready) { throw 'Candidate-promotion baseline approval remains pending; ordinary .NET CI does not authorize promotion.' }
+      - uses: actions/create-github-app-token@v2
+        id: read
+        with:
+          app-id: ${{ vars.WSS_GITHUB_APP_ID }}
+          private-key: ${{ secrets.WSS_GITHUB_APP_PRIVATE_KEY }}
+          owner: cwru-non-academic
+          repositories: |
+            WSSCore
+            Unity_WSS_Integration_Lib
+            GUI_Unity_WSS_Application
+          permission-contents: read
+          permission-actions: read
+          permission-pull-requests: read
+      - name: Check out trusted wrapper tools; never execute the caller-nominated merge source
+        uses: actions/checkout@v4
+        with:
+          repository: cwru-non-academic/Unity_WSS_Integration_Lib
+          ref: dev
+          path: promotion-tools
+          token: ${{ steps.read.outputs.token }}
+          persist-credentials: false
+
+      - name: Validate reviewed wrapper, candidate and no-op before dispatch credentials
+        id: candidate
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ steps.read.outputs.token }}
+          APPROVAL_JSON: ${{ inputs.approval_json }}
+          WRAPPER_MERGE_SHA: ${{ inputs.wrapper_sha }}
+          WRAPPER_PR: ${{ inputs.wrapper_pr }}
+        run: |
+          ./promotion-tools/.github/scripts/Prepare-UnityPromotion.ps1 -Role gui -RepositoryRoot "$env:GITHUB_WORKSPACE/source" -WorkRoot "$env:RUNNER_TEMP/unity-validation" -ApprovalJson $env:APPROVAL_JSON -WrapperMergeSha $env:WRAPPER_MERGE_SHA -WrapperPr $env:WRAPPER_PR -ValidateOnly
+      - name: Mint GUI-only preflight dispatch token after merge validation
+        if: steps.candidate.outputs.no_op == 'false'
+        uses: actions/create-github-app-token@v2
+        id: preflight
+        with:
+          app-id: ${{ vars.WSS_GITHUB_APP_ID }}
+          private-key: ${{ secrets.WSS_GITHUB_APP_PRIVATE_KEY }}
+          owner: cwru-non-academic
+          repositories: GUI_Unity_WSS_Application
+          permission-actions: write
+      - name: Revalidate initial proof and execute actual merged-wrapper GUI preflight
+        if: steps.candidate.outputs.no_op == 'false'
+        id: prepare
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ steps.read.outputs.token }}
+          UNITY_PREFLIGHT_TOKEN: ${{ steps.preflight.outputs.token }}
+          APPROVAL_JSON: ${{ inputs.approval_json }}
+          WRAPPER_MERGE_SHA: ${{ inputs.wrapper_sha }}
+          WRAPPER_PR: ${{ inputs.wrapper_pr }}
+        run: |
+          ./promotion-tools/.github/scripts/Prepare-UnityPromotion.ps1 -Role gui -RepositoryRoot "$env:GITHUB_WORKSPACE/source" -WorkRoot "$env:RUNNER_TEMP/unity-promotion" -ApprovalJson $env:APPROVAL_JSON -WrapperMergeSha $env:WRAPPER_MERGE_SHA -WrapperPr $env:WRAPPER_PR
+      - name: Mint target-only write token after validation
+        if: steps.prepare.outputs.no_op == 'false'
+        uses: actions/create-github-app-token@v2
+        id: write
+        with:
+          app-id: ${{ vars.WSS_GITHUB_APP_ID }}
+          private-key: ${{ secrets.WSS_GITHUB_APP_PRIVATE_KEY }}
+          owner: cwru-non-academic
+          repositories: GUI_Unity_WSS_Application
+          permission-contents: write
+          permission-pull-requests: write
+      - name: Create or reuse exact constrained PR; never merge
+        if: steps.prepare.outputs.no_op == 'false'
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ steps.read.outputs.token }}
+          UNITY_PUSH_TOKEN: ${{ steps.write.outputs.token }}
+        run: ./promotion-tools/.github/scripts/Publish-UnityPromotion.ps1 -RepositoryRoot "$env:GITHUB_WORKSPACE/source" -WorkRoot "$env:RUNNER_TEMP/unity-promotion"
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: unity-promotion-record
+          retention-days: 14
+          if-no-files-found: warn
+          path: |
+            ${{ runner.temp }}/unity-promotion/approval.json
+            ${{ runner.temp }}/unity-promotion/prepared.json
+            ${{ runner.temp }}/unity-promotion/projection.json
+            ${{ runner.temp }}/unity-validation/prepared.json
