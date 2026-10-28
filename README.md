@@ -6,7 +6,7 @@ Pull requests and pushes to `dev` and `main` expose `GUI general conformance` an
 
 The jobs use the exact committed wrapper gitlink and pinned C# fixture. They run the application's production conformance forwarding methods and shared wrapper command/stack source on .NET 9, then verify package build/publish propagation and the wrapper's production transport selector. This is not Unity engine, scene/UI, Player/Editor, Mono/IL2CPP, or hardware coverage. Windows BLE is load-only; Ubuntu/macOS explicitly verify that Unity BLE remains unsupported. OS Serial runtime selection applies to the .NET probe, not proof of Unity Serial support. Licensed Unity tests remain separate.
 
-The wrapper gitlink and reusable validation workflow are pinned to the same published wrapper candidate containing the platform scripts/runtime projection. Merge the wrapper parity PR first. If that merge replaces the candidate commit (for example, by squashing), update both pins to the accepted wrapper commit and rerun these checks before merging the GUI PR. The GUI must never substitute an uncommitted or newer branch checkout for its recorded gitlink.
+The wrapper gitlink and both reusable validation workflow references pin accepted wrapper merge `05b1137695f83c80bc9bac1d43b0f36a35ab02f9`. Its tree matches the tested parity candidate `2482a6c85beb7333e48fa93cfa33a04a0ac81896`; this aligns the references with the reviewed commit on wrapper main. The GUI must never substitute an uncommitted or newer branch checkout for its recorded gitlink.
 
 Before you clone the repo, follow these instructions:
 
