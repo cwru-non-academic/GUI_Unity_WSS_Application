@@ -12,8 +12,10 @@ if ($target.StartsWith($appRoot + [IO.Path]::DirectorySeparatorChar, [StringComp
     throw 'Create the disposable harness outside the application checkout.'
 }
 $fixturePath = Join-Path $CSharpIntegrationRoot 'tests/Wss.CSharpImplementation.Tests/StimulationControllerConformanceTests.cs'
-$fixtureHash = (Get-FileHash -LiteralPath $fixturePath -Algorithm SHA256).Hash
-if ($fixtureHash -ne '1CDFB9448A1776011EADC9AEF8356362216032013A4F268F50242746C50A0B44') {
+$wrapper = if ($WrapperRoot) { [IO.Path]::GetFullPath($WrapperRoot) } else { Join-Path $appRoot 'Assets/SubModules/WSSInterfacingModule' }
+. (Join-Path $wrapper '.github/scripts/UnityContract.ps1')
+$fixtureHash = Get-UnityFixtureHash $CSharpIntegrationRoot
+if ($fixtureHash -cne 'f6aeced83d35255532b6685d9c870307f856aad140da133695a77e9de6104ee2') {
     throw 'Canonical fixture changed. Review compatibility transformations before updating the accepted hash.'
 }
 $fixture = [IO.File]::ReadAllText($fixturePath)
@@ -62,7 +64,6 @@ $tests = Join-Path $target 'Assets/Tests/Editor'
 foreach ($directory in @($runtime, $tests, (Join-Path $target 'Packages'), (Join-Path $target 'ProjectSettings'))) {
     New-Item -ItemType Directory -Path $directory -Force | Out-Null
 }
-$wrapper = if ($WrapperRoot) { [IO.Path]::GetFullPath($WrapperRoot) } else { Join-Path $appRoot 'Assets/SubModules/WSSInterfacingModule' }
 foreach ($name in @('Stimulation.cs','Stimulation.Commands.cs','Stimulation.Stack.cs','StimualtionParams.cs','StimulationBasic.cs','WssTransportSupport.cs')) {
     Copy-Item -LiteralPath (Join-Path $wrapper "UnityImplementation/$name") -Destination $runtime
 }
