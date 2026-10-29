@@ -14,7 +14,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   validate:
-    uses: cwru-non-academic/Unity_WSS_Integration_Lib/.github/workflows/_unity-validation.yml@1cca89deee60188bdc414575ec4ea7ae0589b0bd
+    uses: cwru-non-academic/Unity_WSS_Integration_Lib/.github/workflows/_unity-validation.yml@4d90f49cd8e79f4a835fdc389f08dc171f957060
     with:
       role: gui
       mode: candidate
