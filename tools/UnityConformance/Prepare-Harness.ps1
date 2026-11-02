@@ -69,6 +69,7 @@ foreach ($name in @('Stimulation.cs','Stimulation.Commands.cs','Stimulation.Stac
 }
 Copy-Item -LiteralPath (Join-Path $appRoot 'Assets/Scripts/Diagnostics/WssConformanceController.cs') -Destination $runtime
 Copy-Item -LiteralPath (Join-Path $appRoot 'Assets/Scripts/Diagnostics/WssConformanceController.Unity.cs') -Destination $runtime
+Copy-Item -LiteralPath (Join-Path $appRoot 'Assets/Scripts/Diagnostics/WindowsBleTransportSmokeTest.cs') -Destination $runtime
 if ($ProjectionRoot) {
     # Candidate mode never copies committed DLLs: only the verified fresh projection.
     $plugins = Join-Path $runtime 'Plugins/WSS_Core_Interface'
@@ -78,6 +79,7 @@ if ($ProjectionRoot) {
     Copy-Item -LiteralPath (Join-Path $wrapper 'Plugins') -Destination $runtime -Recurse
 }
 Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'UnityConformanceAdapter.cs') -Destination $tests
+Copy-Item -LiteralPath (Join-Path $PSScriptRoot 'BleImporterContractTests.cs') -Destination $tests
 [IO.File]::WriteAllText((Join-Path $tests 'StimulationControllerConformanceTests.cs'), $fixture)
 @{ name='Wss.Conformance.Runtime'; references=@(); autoReferenced=$true } | ConvertTo-Json | Set-Content (Join-Path $runtime 'Wss.Conformance.Runtime.asmdef')
 @{ name='Wss.Conformance.Editor'; references=@('Wss.Conformance.Runtime','UnityEngine.TestRunner','UnityEditor.TestRunner'); includePlatforms=@('Editor'); overrideReferences=$true; precompiledReferences=@('nunit.framework.dll','WSS_Core_Interface.dll','Newtonsoft.Json.dll'); autoReferenced=$false } | ConvertTo-Json | Set-Content (Join-Path $tests 'Wss.Conformance.Editor.asmdef')
