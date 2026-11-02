@@ -4,9 +4,9 @@
 
 Pull requests and pushes to `dev` and `main` expose `GUI general conformance` and separate `GUI platform compatibility (Windows)`, `GUI platform compatibility (Ubuntu)`, and `GUI platform compatibility (macOS)` contexts, matching the C# CLI names with CLI changed to GUI. The platform contexts are direct jobs without a reusable-workflow prefix.
 
-The jobs use the exact committed wrapper gitlink and pinned C# fixture. They run the application's production conformance forwarding methods and shared wrapper command/stack source on .NET 9, then verify package build/publish propagation and the wrapper's production transport selector. This is not Unity engine, scene/UI, Player/Editor, Mono/IL2CPP, or hardware coverage. Windows BLE is load-only; Ubuntu/macOS explicitly verify that Unity BLE remains unsupported. OS Serial runtime selection applies to the .NET probe, not proof of Unity Serial support. Licensed Unity tests remain separate.
+The jobs use the exact committed wrapper gitlink and pinned C# fixture. They run the application's production conformance forwarding methods and shared wrapper command/stack source on .NET 9, then verify package build/publish propagation and the wrapper's production transport selector. This is not Unity engine, scene/UI, Player/Editor, Mono/IL2CPP, or hardware coverage. Windows BLE is load-only. The updated wrapper supports macOS Mono routing and macOS-only plugin importers; Ubuntu Unity BLE and macOS IL2CPP remain explicitly unsupported. OS Serial runtime selection applies to the .NET probe, not proof of Unity Serial support. Licensed Unity tests remain separate.
 
-The wrapper gitlink and both reusable validation workflow references pin accepted wrapper merge `05b1137695f83c80bc9bac1d43b0f36a35ab02f9`. Its tree matches the tested parity candidate `2482a6c85beb7333e48fa93cfa33a04a0ac81896`; this aligns the references with the reviewed commit on wrapper main. The GUI must never substitute an uncommitted or newer branch checkout for its recorded gitlink.
+The wrapper gitlink records the application's runtime dependency. Immutable reusable-workflow references select validation tooling; they do not replace that gitlink. The GUI must never silently substitute an uncommitted or newer branch checkout for the recorded dependency. Adopt an updated wrapper through the reviewed application phase only after the integration libraries accept the same final Core candidate.
 
 Before you clone the repo, follow these instructions:
 
@@ -70,3 +70,11 @@ If you are starting a new project you can start working now, but if you are addi
 ```bash
 git clone --recursive git@github.com:cwru-non-academic/SimpleWSSStimConsole.git
 ```
+
+## Desktop BLE preparation
+
+The existing `WindowsBleTransportSmokeTest.VerifyInstallation` entry point keeps its serialized type name and also supports macOS Mono. It registers twice, constructs/disposes without connecting, and verifies the native ABI without scanning or writing. It has no automatic Start/OnEnable behavior. The disposable `tools/UnityConformance/Prepare-Harness.ps1` project includes canonical command tests, real PluginImporter checks, and this explicit load-only diagnostic; it never loads the application's scenes or StreamingAssets configuration.
+
+Use the corresponding reviewed wrapper feature revision when preparing that disposable project. The recorded application gitlink remains authoritative for ordinary builds and must be updated through the later reviewed application phase; never silently replace it with a branch checkout. The optional fake BLE lifetime host is test-only and remains compatible with the existing default emulator host.
+
+For an actual Mac Player with the updated wrapper, select Mono, macOS 11 or newer, a compatible arm64/x86_64 architecture, and an appropriate Bluetooth Usage Description in [Player Settings](https://docs.unity3d.com/2022.3/Documentation/Manual/PlayerSettings-macOS.html). The existing project's deployment target and usage description are intentionally not rewritten. Keep operator configuration, including a custom stimulation target such as `0x80`, unchanged. Windows tests, fake transports and .NET macOS ABI tests do not establish native macOS Unity Player, IL2CPP or physical BLE operation.
