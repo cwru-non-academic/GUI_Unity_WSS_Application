@@ -6,6 +6,8 @@ using UnityEngine;
 using Wss.Transports;
 using Wss.Transports.Backends.Windows;
 using Wss.Ble.Windows.Native;
+#elif (UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX) && !ENABLE_IL2CPP
+using Wss.Transports;
 #endif
 
 [DisallowMultipleComponent]
@@ -73,8 +75,35 @@ public sealed class WindowsBleTransportSmokeTest : MonoBehaviour
             a.GetName().Name == "System.Numerics.Vectors" || a.GetName().Name == "System.Runtime.CompilerServices.Unsafe"))
             Debug.Log("[BLE transport] Dependency " + assembly.FullName + " from " + assembly.Location);
         Debug.Log("[BLE transport] PASS: repeated construction/disposal, native ABI and unique WSS identities; no connections or writes.");
+#elif (UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX) && !ENABLE_IL2CPP
+        // Older recorded wrappers have this importer disabled. Keep this GUI
+        // source compilable with them, but never treat a missing backend as success.
+        var bootstrap = Type.GetType("Wss.Transports.Backends.MacOS.MacBleBackend, WSS.Transport.BLE.MacOS", false);
+        if (bootstrap == null)
+            throw new PlatformNotSupportedException("The recorded wrapper must enable the reviewed macOS Mono backend/importers before this diagnostic can run.");
+        var register = bootstrap.GetMethod("Register", BindingFlags.Public | BindingFlags.Static);
+        var verifyAbi = bootstrap.GetMethod("VerifyNativeAbi", BindingFlags.Public | BindingFlags.Static);
+        if (register == null || verifyAbi == null) throw new InvalidOperationException("Unexpected macOS BLE bootstrap contract.");
+        register.Invoke(null, null);
+        register.Invoke(null, null);
+        for (int cycle = 1; cycle <= 2; cycle++)
+        {
+            using (var transport = new BleNusTransport(new BleNusTransportOptions { DeviceName = "diagnostic-never-connect" }))
+            {
+                var backend = typeof(BleNusTransport).GetField("_backend", BindingFlags.Instance | BindingFlags.NonPublic)?.GetValue(transport);
+                if (backend == null || backend.GetType().FullName != "Wss.Transports.Backends.MacOS.MacBleNusBackend" || transport.IsConnected)
+                    throw new InvalidOperationException("Disconnected construction did not select the registered macOS backend.");
+            }
+        }
+        verifyAbi.Invoke(null, null); // ABI create/destroy only; no CBCentralManager, scan, connect or writes.
+        foreach (string name in new[] { "WSS_Core_Interface", "WSS.Transport.Serial", "WSS.Transport.BLE", "WSS.Transport.BLE.MacOS" })
+            if (AppDomain.CurrentDomain.GetAssemblies().Count(assembly => assembly.GetName().Name == name) != 1)
+                throw new InvalidOperationException("Expected exactly one loaded " + name);
+        Debug.Log("[BLE transport] PASS: macOS Mono registration, repeated disconnected construction/disposal and native ABI; no Bluetooth I/O.");
+#elif UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX
+        throw new PlatformNotSupportedException("macOS BLE IL2CPP callbacks are unsupported; use the Mono scripting backend.");
 #else
-        throw new PlatformNotSupportedException("This diagnostic requires Windows Editor or Windows standalone.");
+        throw new PlatformNotSupportedException("This diagnostic requires Windows or macOS Mono Editor/standalone; Linux Unity BLE is unsupported.");
 #endif
     }
 }

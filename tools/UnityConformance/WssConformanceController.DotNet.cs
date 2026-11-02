@@ -9,5 +9,13 @@ public sealed partial class WssConformanceController
         _stimulation = new Stimulation(configDirectory);
     }
 
+#if BLE_LIFECYCLE_CONFORMANCE
+    /// <summary>Creates the emulator host with the production BLE lifetime adapter.</summary>
+    public WssConformanceController(string configDirectory, bool useBleLifecycle)
+    {
+        _stimulation = new Stimulation(configDirectory, useBleLifecycle);
+    }
+#endif
+
     private void DisposeHost() { }
 }
