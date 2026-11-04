@@ -11,6 +11,16 @@ concurrency:
   group: unity-gui-${{ github.ref }}
   cancel-in-progress: true
 jobs:
+  receipt-contracts:
+    name: Release receipt safety contracts
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Reject unreviewed, stale or incorrectly scoped acceptance
+        shell: pwsh
+        run: ./.github/scripts/tests/WssReleaseReceipt.Tests.ps1
   validate:
     uses: cwru-non-academic/Unity_WSS_Integration_Lib/.github/workflows/_unity-validation.yml@2f10608542a3cc8158100c2bd6978ec310c2db1f
     with:
@@ -22,13 +32,14 @@ jobs:
   acceptance:
     name: GUI general conformance
     if: always()
-    needs: validate
+    needs: [validate, receipt-contracts]
     runs-on: ubuntu-latest
     steps:
       - name: Require actual committed-state conformance
         env:
           VALIDATION_RESULT: ${{ needs.validate.result }}
-        run: test "$VALIDATION_RESULT" = success
+          RECEIPT_RESULT: ${{ needs.receipt-contracts.result }}
+        run: test "$VALIDATION_RESULT" = success && test "$RECEIPT_RESULT" = success
 
   platform-compatibility:
     name: GUI platform compatibility (${{ matrix.label }})
