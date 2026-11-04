@@ -22,7 +22,7 @@ jobs:
         shell: pwsh
         run: ./.github/scripts/tests/WssReleaseReceipt.Tests.ps1
   validate:
-    uses: cwru-non-academic/Unity_WSS_Integration_Lib/.github/workflows/_unity-validation.yml@05b1137695f83c80bc9bac1d43b0f36a35ab02f9
+    uses: cwru-non-academic/Unity_WSS_Integration_Lib/.github/workflows/_unity-validation.yml@955b5cf0dafaf5c27714c5bde772d60b4a4b7c42
     with:
       role: gui
       mode: committed
