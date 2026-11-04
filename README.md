@@ -78,3 +78,10 @@ The existing `WindowsBleTransportSmokeTest.VerifyInstallation` entry point keeps
 Use the corresponding reviewed wrapper feature revision when preparing that disposable project. The recorded application gitlink remains authoritative for ordinary builds and must be updated through the later reviewed application phase; never silently replace it with a branch checkout. The optional fake BLE lifetime host is test-only and remains compatible with the existing default emulator host.
 
 For an actual Mac Player with the updated wrapper, select Mono, macOS 11 or newer, a compatible arm64/x86_64 architecture, and an appropriate Bluetooth Usage Description in [Player Settings](https://docs.unity3d.com/2022.3/Documentation/Manual/PlayerSettings-macOS.html). The existing project's deployment target and usage description are intentionally not rewritten. Keep operator configuration, including a custom stimulation target such as `0x80`, unchanged. Windows tests, fake transports and .NET macOS ABI tests do not establish native macOS Unity Player, IL2CPP or physical BLE operation.
+Dev release acceptance uses `release-receipt.yml` with the exact Core producer run
+and frozen plan ID. It emits a read-only receipt after the human-reviewed bot
+merge, paired preflights, candidate-byte/projection checks and fresh final-merge
+CI. GUI acceptance additionally verifies the actual wrapper gitlink and its
+post-merge preflight. Main supplies registered trusted tooling; stable releases
+remain disabled. Coverage describes the .NET harness, not Unity Editor/Player,
+IL2CPP or physical BLE validation.
