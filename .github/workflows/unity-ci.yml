@@ -24,7 +24,7 @@ jobs:
           ./.github/scripts/tests/WssReleaseReceipt.Tests.ps1
           ./.github/scripts/tests/MacOSConsumerContract.Tests.ps1
   validate:
-    uses: cwru-non-academic/Unity_WSS_Integration_Lib/.github/workflows/_unity-validation.yml@b7252a8188097106995df9982b1b6a6def641935
+    uses: cwru-non-academic/Unity_WSS_Integration_Lib/.github/workflows/_unity-validation.yml@86b048adaabc0aad9fe798e3a5fda674e81a599e
     with:
       role: gui
       mode: committed
@@ -115,7 +115,7 @@ jobs:
       matrix:
         include:
           - {os: macos-15-intel, label: macOS-x64, cpu: Intel x64, uname: x86_64}
-          - {os: macos-14, label: macOS-arm64, cpu: Apple Silicon arm64, uname: arm64}
+          - {os: macos-15, label: macOS-arm64, cpu: Apple Silicon arm64, uname: arm64}
     steps:
       - name: Require the native Mac runner architecture
         shell: pwsh
