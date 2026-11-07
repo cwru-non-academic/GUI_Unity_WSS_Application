@@ -1,0 +1,109 @@
+{
+  "source": "CLI committed lib; preserved read-only",
+  "excluded": [
+    "Linux backend",
+    "net8.0 Ports runtime trees"
+  ],
+  "candidate": {
+    "repository": "cwru-non-academic/WSSCore",
+    "run_id": "39092192696",
+    "artifact_id": "12123267360",
+    "commit": "5ec22900587587e9e9465ffa53d04d7d1ce13545",
+    "archive": "WSS-Universal-ci.zip",
+    "sha256": "3bc303096594978fa77e95cd80901a8fb72d26c42a7408c38c8668563b6f1a7e"
+  },
+  "schema": 1,
+  "projection": [
+    {
+      "source": "Newtonsoft.Json.dll",
+      "destination": "Assets/SubModules/WSSInterfacingModule/Plugins/WSS_Core_Interface/Newtonsoft.Json.dll",
+      "provider": "disabled; Unity UPM 3.2.1",
+      "sha256": "8C1DD5C184B4E2E7EAD06971FF3EBCB46783BE972292D1DEB1061744369B4D80"
+    },
+    {
+      "source": "System.Buffers.dll",
+      "destination": "Assets/SubModules/WSSInterfacingModule/Plugins/WSS_Core_Interface/System.Buffers.dll",
+      "provider": "universal payload",
+      "sha256": "C65FFF603B283DC966D1A8B730C11D5E5E750E8021BD24640612F6CC3F2C6FB7"
+    },
+    {
+      "source": "System.IO.Ports.dll",
+      "destination": "Assets/SubModules/WSSInterfacingModule/Plugins/WSS_Core_Interface/System.IO.Ports.dll",
+      "provider": "universal payload",
+      "sha256": "83B941AD7B18FC02AB2B11FD976EE15C94AD5C4829964A32A716D10C92C1B953"
+    },
+    {
+      "source": "System.Memory.dll",
+      "destination": "Assets/SubModules/WSSInterfacingModule/Plugins/WSS_Core_Interface/System.Memory.dll",
+      "provider": "universal payload",
+      "sha256": "11590D8BB3B12F29F4202B3EF8593229A5CD6DEBB61E76CBA9AC5493A82EE382"
+    },
+    {
+      "source": "System.Numerics.Vectors.dll",
+      "destination": "Assets/SubModules/WSSInterfacingModule/Plugins/WSS_Core_Interface/System.Numerics.Vectors.dll",
+      "provider": "disabled; Unity Mono framework",
+      "sha256": "17924E5DC87E0D6229D2DD0BCFC1FDFABD820901B13A68BAA89FCB80C4D1A67F"
+    },
+    {
+      "source": "System.Runtime.CompilerServices.Unsafe.dll",
+      "destination": "Assets/SubModules/WSSInterfacingModule/Plugins/WSS_Core_Interface/System.Runtime.CompilerServices.Unsafe.dll",
+      "provider": "universal payload",
+      "sha256": "01748200F2400C742AA689F1F5101BD6298EFDFD92C00C18F4FA473847235BA9"
+    },
+    {
+      "source": "System.Security.AccessControl.dll",
+      "destination": "Assets/SubModules/WSSInterfacingModule/Plugins/WSS_Core_Interface/System.Security.AccessControl.dll",
+      "provider": "universal payload",
+      "sha256": "B122549811CA87F86F4CF651357BC312AF01AA93A2F27750DAF434CBE5901471"
+    },
+    {
+      "source": "System.Security.Permissions.dll",
+      "destination": "Assets/SubModules/WSSInterfacingModule/Plugins/WSS_Core_Interface/System.Security.Permissions.dll",
+      "provider": "universal payload",
+      "sha256": "23ACF8D0F81FBE8B4E02FC3B66D7AEAA4EACBB0C6BB617E6BD1A7C651F9DDB66"
+    },
+    {
+      "source": "System.Security.Principal.Windows.dll",
+      "destination": "Assets/SubModules/WSSInterfacingModule/Plugins/WSS_Core_Interface/System.Security.Principal.Windows.dll",
+      "provider": "universal payload",
+      "sha256": "7828DFD952A9FD49404477BAFF714849177D9F18C0654ADAFADBDCAFB4B21F47"
+    },
+    {
+      "source": "WSS_Core_Interface.dll",
+      "destination": "Assets/SubModules/WSSInterfacingModule/Plugins/WSS_Core_Interface/WSS_Core_Interface.dll",
+      "provider": "universal payload",
+      "sha256": "8755E56DB815BE458E325B456DD616ED25AF89BCCE341112946CBEA913DA58C2"
+    },
+    {
+      "source": "WSS.Transport.BLE.dll",
+      "destination": "Assets/SubModules/WSSInterfacingModule/Plugins/WSS_Core_Interface/WSS.Transport.BLE.dll",
+      "provider": "universal payload",
+      "sha256": "30AA5B0C29A1C4089D75BCDEC00A1A12E35066E988DDF066F13DFD5643C0F40D"
+    },
+    {
+      "source": "WSS.Transport.Serial.dll",
+      "destination": "Assets/SubModules/WSSInterfacingModule/Plugins/WSS_Core_Interface/WSS.Transport.Serial.dll",
+      "provider": "universal payload",
+      "sha256": "97DC885DA15AD211070930A0BABC154C47EA6BB6B11DCED9E25EFD8B3010004B"
+    },
+    {
+      "source": "backends/windows/WSS.Transport.BLE.Windows.dll",
+      "destination": "Assets/SubModules/WSSInterfacingModule/Plugins/WSS_Core_Interface/WSS.Transport.BLE.Windows.dll",
+      "provider": "universal Windows x64 projection",
+      "sha256": "49475CC96EBBE757B01058C40EE44A0DBBAD7A2BF00006F9A4DA6F7384C29F49"
+    },
+    {
+      "source": "backends/windows/WSS.Transport.BLE.Windows.Native.dll",
+      "destination": "Assets/SubModules/WSSInterfacingModule/Plugins/WSS_Core_Interface/WSS.Transport.BLE.Windows.Native.dll",
+      "provider": "universal Windows x64 projection",
+      "sha256": "B7577248B55048A496F6AD1EE972A96FB1E2764F5698AB366F408FF169BC1331"
+    },
+    {
+      "source": "backends/windows/WssBleWindows.dll",
+      "destination": "Assets/SubModules/WSSInterfacingModule/Plugins/WSS_Core_Interface/WssBleWindows.dll",
+      "provider": "universal Windows x64 projection",
+      "sha256": "A31A0756B8E63027F39A3DFEC02E392DE79DE90D832A60E8F567E40A4CD7A8BA"
+    }
+  ],
+  "runtimeValidation": "pending; importer and Serial/Mono compatibility require real Unity execution"
+}
