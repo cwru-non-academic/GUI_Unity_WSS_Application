@@ -1,0 +1,23 @@
+name: Promotion tooling binding
+on:
+  pull_request:
+    branches: [dev, main]
+  push:
+    branches: [dev, main]
+permissions:
+  contents: read
+jobs:
+  contracts:
+    name: Promotion caller binding (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-2022]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Verify reviewed checkout output binds every promotion phase
+        shell: pwsh
+        run: ./.github/scripts/tests/PromotionToolingBinding.Tests.ps1
