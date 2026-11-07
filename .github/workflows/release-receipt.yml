@@ -48,7 +48,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           repository: cwru-non-academic/Unity_WSS_Integration_Lib
-          ref: 597eead0a22ba48488c16f82d37853f8b983c6f8
+          ref: fe4642a4dc6fbf684acf669759c58ee520620d79
           path: .validation-tools
           fetch-depth: 0
           persist-credentials: false
