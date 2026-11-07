@@ -15,7 +15,8 @@ $fixturePath = Join-Path $CSharpIntegrationRoot 'tests/Wss.CSharpImplementation.
 $wrapper = if ($WrapperRoot) { [IO.Path]::GetFullPath($WrapperRoot) } else { Join-Path $appRoot 'Assets/SubModules/WSSInterfacingModule' }
 . (Join-Path $wrapper '.github/scripts/UnityContract.ps1')
 $fixtureHash = Get-UnityFixtureHash $CSharpIntegrationRoot
-if ($fixtureHash -cne '96812ab33be7ede8840ddb78131a50796fd3f797d9627f958251b3e58796baf8') {
+$layered = $fixtureHash -ceq '96812ab33be7ede8840ddb78131a50796fd3f797d9627f958251b3e58796baf8'
+if (!$layered -and $fixtureHash -cne 'f6aeced83d35255532b6685d9c870307f856aad140da133695a77e9de6104ee2') {
     throw 'Canonical fixture changed. Review compatibility transformations before updating the accepted hash.'
 }
 $fixture = [IO.File]::ReadAllText($fixturePath)
@@ -54,6 +55,7 @@ $fixture = $fixture.Replace($normalizedMethod, @'
     private async Task NormalizedScenarioAsync(WssNormalizedStimulationScenario scenario)
 '@)
 # Preserve the shared sequence selection and body; adapt only the Editor entry point.
+if ($layered) {
 $sequenceMethod = '[TestCaseSource(nameof(SequenceScenarios))]' + "`n" + '    public Task StimulationSequence(WssStimulationSequence scenario) => RunSequence(scenario);'
 if (!$fixture.Contains($sequenceMethod)) { $sequenceMethod = $sequenceMethod.Replace("`n", "`r`n") }
 if (!$fixture.Contains($sequenceMethod)) { throw 'Expected the canonical sequence-case method.' }
@@ -70,8 +72,10 @@ $fixture = $fixture.Replace($sequenceMethod, @'
     private static IEnumerable<string> UnitySequenceScenarioIds
         => UnitySequenceScenarios.Select(scenario => scenario.Id);
 '@)
+}
+$expectedAssertions = if ($layered) { 20 } else { 18 }
 $assertions = @([regex]::Matches([IO.File]::ReadAllText($fixturePath), 'Assert\.That\(.*?;', 'Singleline').Value)
-if ($assertions.Count -ne 20 -or ($assertions -join "`n") -cne (@([regex]::Matches($fixture, 'Assert\.That\(.*?;', 'Singleline').Value) -join "`n")) { throw 'Canonical assertion expressions changed.' }
+if ($assertions.Count -ne $expectedAssertions -or ($assertions -join "`n") -cne (@([regex]::Matches($fixture, 'Assert\.That\(.*?;', 'Singleline').Value) -join "`n")) { throw 'Canonical assertion expressions changed.' }
 $fixture = $fixture.Replace('await Task.Delay(1);', 'await UnityConformanceAdapter.NextUpdate();')
 $fixture = $fixture.Replace('namespace Wss.CSharpImplementation.Tests;', "namespace Wss.CSharpImplementation.Tests`n{") + "`n}`n"
 $fixture = "#nullable enable`nusing System;`nusing System.Collections.Generic;`nusing System.IO;`nusing System.Linq;`nusing System.Threading.Tasks;`nusing StimulationController = UnityConformanceAdapter;`n" + $fixture
