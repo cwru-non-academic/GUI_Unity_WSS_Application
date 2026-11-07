@@ -45,6 +45,21 @@ public sealed partial class WssConformanceController : IDisposable
     public void StimulateNormalized(string channel, float input)
     { ThrowIfDisposed(); _stimulation.StimulateNormalized(channel, input); }
 
+    /// <summary>Forwards stimulation through the configured model.</summary>
+    /// <param name="channel">Wrapper channel name or chN alias.</param>
+    /// <param name="magnitude">Input magnitude consumed by the configured model.</param>
+    public void StimWithMode(string channel, float magnitude)
+    { ThrowIfDisposed(); _stimulation.StimWithMode(channel, magnitude); }
+
+    /// <summary>Reloads stimulation parameters from the configured JSON location.</summary>
+    public void LoadParamsJson()
+    { ThrowIfDisposed(); _stimulation.LoadParamsJson(); }
+
+    /// <summary>Gets the shared model configuration controller.</summary>
+    /// <returns>The controller used by the production stimulation wrapper.</returns>
+    public Wss.ModelModule.ModelConfigController GetModelConfigCTRL()
+    { ThrowIfDisposed(); return _stimulation.GetModelConfigCTRL(); }
+
     /// <summary>Forwards a runtime Event ratio edit through the application entry point.</summary>
     /// <param name="target">Wrapper target index.</param>
     /// <param name="ratio">Canonical Event ratio.</param>
