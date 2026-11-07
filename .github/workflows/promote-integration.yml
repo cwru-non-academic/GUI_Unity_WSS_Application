@@ -66,10 +66,11 @@ jobs:
           permission-actions: read
           permission-pull-requests: read
       - name: Check out trusted wrapper tools; never execute the caller-nominated merge source
+        id: promotion_tools
         uses: actions/checkout@v4
         with:
           repository: cwru-non-academic/Unity_WSS_Integration_Lib
-          ref: 3548acd11783c5477a731d8360b613aac5d47a75
+          ref: e7dee377001ebea97b8b9fa25e03312b422d08dd
           path: promotion-tools
           token: ${{ steps.read.outputs.token }}
           persist-credentials: false
@@ -83,7 +84,7 @@ jobs:
           WRAPPER_MERGE_SHA: ${{ inputs.wrapper_sha }}
           WRAPPER_PR: ${{ inputs.wrapper_pr }}
         run: |
-          ./promotion-tools/.github/scripts/Prepare-UnityPromotion.ps1 -Role gui -RepositoryRoot "$env:GITHUB_WORKSPACE/source" -WorkRoot "$env:RUNNER_TEMP/unity-validation" -ApprovalJson $env:APPROVAL_JSON -WrapperMergeSha $env:WRAPPER_MERGE_SHA -WrapperPr $env:WRAPPER_PR -ValidateOnly
+          ./promotion-tools/.github/scripts/Prepare-UnityPromotion.ps1 -Role gui -ToolSha '${{ steps.promotion_tools.outputs.commit }}' -RepositoryRoot "$env:GITHUB_WORKSPACE/source" -WorkRoot "$env:RUNNER_TEMP/unity-validation" -ApprovalJson $env:APPROVAL_JSON -WrapperMergeSha $env:WRAPPER_MERGE_SHA -WrapperPr $env:WRAPPER_PR -ValidateOnly
       - name: Mint GUI-only preflight dispatch token after merge validation
         if: steps.candidate.outputs.no_op == 'false'
         uses: actions/create-github-app-token@v2
@@ -105,7 +106,7 @@ jobs:
           WRAPPER_MERGE_SHA: ${{ inputs.wrapper_sha }}
           WRAPPER_PR: ${{ inputs.wrapper_pr }}
         run: |
-          ./promotion-tools/.github/scripts/Prepare-UnityPromotion.ps1 -Role gui -RepositoryRoot "$env:GITHUB_WORKSPACE/source" -WorkRoot "$env:RUNNER_TEMP/unity-promotion" -ApprovalJson $env:APPROVAL_JSON -WrapperMergeSha $env:WRAPPER_MERGE_SHA -WrapperPr $env:WRAPPER_PR
+          ./promotion-tools/.github/scripts/Prepare-UnityPromotion.ps1 -Role gui -ToolSha '${{ steps.promotion_tools.outputs.commit }}' -RepositoryRoot "$env:GITHUB_WORKSPACE/source" -WorkRoot "$env:RUNNER_TEMP/unity-promotion" -ApprovalJson $env:APPROVAL_JSON -WrapperMergeSha $env:WRAPPER_MERGE_SHA -WrapperPr $env:WRAPPER_PR
       - name: Mint target-only write token after validation
         if: steps.prepare.outputs.no_op == 'false'
         uses: actions/create-github-app-token@v2
@@ -123,7 +124,7 @@ jobs:
         env:
           GH_TOKEN: ${{ steps.read.outputs.token }}
           UNITY_PUSH_TOKEN: ${{ steps.write.outputs.token }}
-        run: ./promotion-tools/.github/scripts/Publish-UnityPromotion.ps1 -RepositoryRoot "$env:GITHUB_WORKSPACE/source" -WorkRoot "$env:RUNNER_TEMP/unity-promotion"
+        run: ./promotion-tools/.github/scripts/Publish-UnityPromotion.ps1 -ToolSha '${{ steps.promotion_tools.outputs.commit }}' -RepositoryRoot "$env:GITHUB_WORKSPACE/source" -WorkRoot "$env:RUNNER_TEMP/unity-promotion"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
