@@ -54,6 +54,9 @@ internal sealed class UnityConformanceAdapter : IDisposable
     public bool TryGetConformance(out IWssConformance conformance) => _controller.TryGetConformance(out conformance);
     public void StimulateAnalog(string channel, int pw, int amplitude, int ipi) => _controller.StimulateAnalog(channel, pw, amplitude, ipi);
     public void StimulateNormalized(string channel, float input) => _controller.StimulateNormalized(channel, input);
+    public void StimWithMode(string channel, float magnitude) => _controller.StimWithMode(channel, magnitude);
+    public void LoadParamsJson() => _controller.LoadParamsJson();
+    public Wss.ModelModule.ModelConfigController GetModelConfigCTRL() => _controller.GetModelConfigCTRL();
     public void UpdateEventRatio(int target, int ratio, int eventId) => _controller.UpdateEventRatio(target, ratio, eventId);
     public void StopStimulation(int target) => _controller.StopStimulation(target);
 
