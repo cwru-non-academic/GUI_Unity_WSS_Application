@@ -26,7 +26,7 @@ jobs:
           ./.github/scripts/tests/WssReleaseReceipt.Tests.ps1
           ./.github/scripts/tests/MacOSConsumerContract.Tests.ps1
   validate:
-    uses: cwru-non-academic/Unity_WSS_Integration_Lib/.github/workflows/_unity-validation.yml@ef84277daf5e141b0160add056f5a91fbd43568e
+    uses: cwru-non-academic/Unity_WSS_Integration_Lib/.github/workflows/_unity-validation.yml@ffa9eb5135ace6866bbafc997afc4dac83a687b3
     with:
       role: gui
       mode: committed
@@ -68,6 +68,10 @@ jobs:
           $entry = git -C gui ls-tree HEAD -- Assets/SubModules/WSSInterfacingModule
           if ($LASTEXITCODE -ne 0 -or $entry -cnotmatch '^160000 commit ([0-9a-f]{40})\s+Assets/SubModules/WSSInterfacingModule$') { throw 'Exact wrapper gitlink is required.' }
           "wrapper=$($Matches[1])" >> $env:GITHUB_OUTPUT
+          $body=Get-Content gui/.github/workflows/unity-ci.yml -Raw
+          $pins=[regex]::Matches($body,'(?m)^\s*uses: cwru-non-academic/Unity_WSS_Integration_Lib/\.github/workflows/_unity-validation\.yml@([a-f0-9]{40})\s*$')
+          if($pins.Count -ne 1){throw 'Exactly one literal reviewed Unity tooling pin is required.'}
+          "tooling=$($pins[0].Groups[1].Value)" >> $env:GITHUB_OUTPUT
           $config = Get-Content gui/.github/unity-ci.json -Raw | ConvertFrom-Json
           if ($config.fixture_commit -cnotmatch '^[0-9a-f]{40}$' -or $config.dotnet_sdk -cne '9.0.316') { throw 'Unexpected fixture/SDK contract.' }
           "fixture=$($config.fixture_commit)" >> $env:GITHUB_OUTPUT
@@ -81,20 +85,44 @@ jobs:
           persist-credentials: false
       - uses: actions/checkout@v4
         with:
+          repository: cwru-non-academic/Unity_WSS_Integration_Lib
+          ref: ${{ steps.sources.outputs.tooling }}
+          path: tooling
+          persist-credentials: false
+      - name: Resolve fixture from authenticated actual payload using trusted tooling
+        id: profile
+        shell: pwsh
+        env:
+          TOOL_SHA: ${{ steps.sources.outputs.tooling }}
+          WRAPPER_SHA: ${{ steps.sources.outputs.wrapper }}
+        run: |
+          . ./tooling/.github/scripts/UnityContract.ps1
+          . ./tooling/.github/scripts/UnityProfiles.ps1
+          . ./tooling/.github/scripts/UnityTooling.ps1
+          $tools=Join-Path $env:GITHUB_WORKSPACE 'tooling'
+          $product=Join-Path $env:GITHUB_WORKSPACE 'wrapper'
+          $configPath=Join-Path $tools '.github/unity-ci.json'
+          $null=Resolve-UnityTooling $tools $env:TOOL_SHA $product $env:WRAPPER_SHA $configPath
+          $config=Read-UnityExecutionConfig $configPath $product
+          "fixture=$($config.fixture_commit)" >> $env:GITHUB_OUTPUT
+          "sdk=$($config.dotnet_sdk)" >> $env:GITHUB_OUTPUT
+      - uses: actions/checkout@v4
+        with:
           repository: cwru-non-academic/CSharp_WSS_Integration_Lib
-          ref: ${{ steps.sources.outputs.fixture }}
+          ref: ${{ steps.profile.outputs.fixture }}
           path: fixture
           persist-credentials: false
       - uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: ${{ steps.sources.outputs.sdk }}
+          dotnet-version: ${{ steps.profile.outputs.sdk }}
       - name: Verify application commands and packaged transport selection (.NET, no Unity engine)
         shell: pwsh
         env:
           WRAPPER_SHA: ${{ steps.sources.outputs.wrapper }}
           GUI_SHA: ${{ github.sha }}
+          TOOL_SHA: ${{ steps.sources.outputs.tooling }}
         run: |
-          ./wrapper/.github/scripts/Invoke-DotNetPlatformCompatibility.ps1 -WrapperRoot "$env:GITHUB_WORKSPACE/wrapper" -FixtureRoot "$env:GITHUB_WORKSPACE/fixture" -WrapperSha $env:WRAPPER_SHA -ConfigPath "$env:GITHUB_WORKSPACE/wrapper/.github/unity-ci.json" -OutputRoot "$env:RUNNER_TEMP/platform-results" -Role gui -GuiRoot "$env:GITHUB_WORKSPACE/gui" -GuiSha $env:GUI_SHA
+          ./tooling/.github/scripts/Invoke-DotNetPlatformCompatibility.ps1 -ToolRoot "$env:GITHUB_WORKSPACE/tooling" -ToolSha $env:TOOL_SHA -WrapperRoot "$env:GITHUB_WORKSPACE/wrapper" -FixtureRoot "$env:GITHUB_WORKSPACE/fixture" -WrapperSha $env:WRAPPER_SHA -ConfigPath "$env:GITHUB_WORKSPACE/tooling/.github/unity-ci.json" -OutputRoot "$env:RUNNER_TEMP/platform-results" -Role gui -GuiRoot "$env:GITHUB_WORKSPACE/gui" -GuiSha $env:GUI_SHA
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -137,6 +165,10 @@ jobs:
           $entry = git -C gui ls-tree HEAD -- Assets/SubModules/WSSInterfacingModule
           if ($LASTEXITCODE -ne 0 -or $entry -cnotmatch '^160000 commit ([0-9a-f]{40})\s+Assets/SubModules/WSSInterfacingModule$') { throw 'Exact wrapper gitlink is required.' }
           "wrapper=$($Matches[1])" >> $env:GITHUB_OUTPUT
+          $body=Get-Content gui/.github/workflows/unity-ci.yml -Raw
+          $pins=[regex]::Matches($body,'(?m)^\s*uses: cwru-non-academic/Unity_WSS_Integration_Lib/\.github/workflows/_unity-validation\.yml@([a-f0-9]{40})\s*$')
+          if($pins.Count -ne 1){throw 'Exactly one literal reviewed Unity tooling pin is required.'}
+          "tooling=$($pins[0].Groups[1].Value)" >> $env:GITHUB_OUTPUT
           $config = Get-Content gui/.github/unity-ci.json -Raw | ConvertFrom-Json
           if ($config.fixture_commit -cnotmatch '^[0-9a-f]{40}$' -or $config.dotnet_sdk -cne '9.0.316') { throw 'Unexpected fixture/SDK contract.' }
           "fixture=$($config.fixture_commit)" >> $env:GITHUB_OUTPUT
@@ -150,20 +182,44 @@ jobs:
           persist-credentials: false
       - uses: actions/checkout@v4
         with:
+          repository: cwru-non-academic/Unity_WSS_Integration_Lib
+          ref: ${{ steps.sources.outputs.tooling }}
+          path: tooling
+          persist-credentials: false
+      - name: Resolve fixture from authenticated actual payload using trusted tooling
+        id: profile
+        shell: pwsh
+        env:
+          TOOL_SHA: ${{ steps.sources.outputs.tooling }}
+          WRAPPER_SHA: ${{ steps.sources.outputs.wrapper }}
+        run: |
+          . ./tooling/.github/scripts/UnityContract.ps1
+          . ./tooling/.github/scripts/UnityProfiles.ps1
+          . ./tooling/.github/scripts/UnityTooling.ps1
+          $tools=Join-Path $env:GITHUB_WORKSPACE 'tooling'
+          $product=Join-Path $env:GITHUB_WORKSPACE 'wrapper'
+          $configPath=Join-Path $tools '.github/unity-ci.json'
+          $null=Resolve-UnityTooling $tools $env:TOOL_SHA $product $env:WRAPPER_SHA $configPath
+          $config=Read-UnityExecutionConfig $configPath $product
+          "fixture=$($config.fixture_commit)" >> $env:GITHUB_OUTPUT
+          "sdk=$($config.dotnet_sdk)" >> $env:GITHUB_OUTPUT
+      - uses: actions/checkout@v4
+        with:
           repository: cwru-non-academic/CSharp_WSS_Integration_Lib
-          ref: ${{ steps.sources.outputs.fixture }}
+          ref: ${{ steps.profile.outputs.fixture }}
           path: fixture
           persist-credentials: false
       - uses: actions/setup-dotnet@v4
         with:
-          dotnet-version: ${{ steps.sources.outputs.sdk }}
+          dotnet-version: ${{ steps.profile.outputs.sdk }}
       - name: Verify application commands and packaged transport selection (.NET, no Unity engine)
         shell: pwsh
         env:
           WRAPPER_SHA: ${{ steps.sources.outputs.wrapper }}
           GUI_SHA: ${{ github.sha }}
+          TOOL_SHA: ${{ steps.sources.outputs.tooling }}
         run: |
-          ./wrapper/.github/scripts/Invoke-DotNetPlatformCompatibility.ps1 -WrapperRoot "$env:GITHUB_WORKSPACE/wrapper" -FixtureRoot "$env:GITHUB_WORKSPACE/fixture" -WrapperSha $env:WRAPPER_SHA -ConfigPath "$env:GITHUB_WORKSPACE/wrapper/.github/unity-ci.json" -OutputRoot "$env:RUNNER_TEMP/platform-results" -Role gui -GuiRoot "$env:GITHUB_WORKSPACE/gui" -GuiSha $env:GUI_SHA
+          ./tooling/.github/scripts/Invoke-DotNetPlatformCompatibility.ps1 -ToolRoot "$env:GITHUB_WORKSPACE/tooling" -ToolSha $env:TOOL_SHA -WrapperRoot "$env:GITHUB_WORKSPACE/wrapper" -FixtureRoot "$env:GITHUB_WORKSPACE/fixture" -WrapperSha $env:WRAPPER_SHA -ConfigPath "$env:GITHUB_WORKSPACE/tooling/.github/unity-ci.json" -OutputRoot "$env:RUNNER_TEMP/platform-results" -Role gui -GuiRoot "$env:GITHUB_WORKSPACE/gui" -GuiSha $env:GUI_SHA
       - uses: actions/upload-artifact@v4
         if: always()
         with:
