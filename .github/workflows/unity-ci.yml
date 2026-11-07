@@ -123,6 +123,9 @@ jobs:
           TOOL_SHA: ${{ steps.sources.outputs.tooling }}
         run: |
           ./tooling/.github/scripts/Invoke-DotNetPlatformCompatibility.ps1 -ToolRoot "$env:GITHUB_WORKSPACE/tooling" -ToolSha $env:TOOL_SHA -WrapperRoot "$env:GITHUB_WORKSPACE/wrapper" -FixtureRoot "$env:GITHUB_WORKSPACE/fixture" -WrapperSha $env:WRAPPER_SHA -ConfigPath "$env:GITHUB_WORKSPACE/tooling/.github/unity-ci.json" -OutputRoot "$env:RUNNER_TEMP/platform-results" -Role gui -GuiRoot "$env:GITHUB_WORKSPACE/gui" -GuiSha $env:GUI_SHA
+      - name: Verify actual GUI calibration source with the existing host emulator
+        shell: pwsh
+        run: ./gui/Tests~/GuiSourceBoundary/Run.ps1 -WrapperRoot "$env:GITHUB_WORKSPACE/wrapper" -ToolRoot "$env:GITHUB_WORKSPACE/tooling" -OutputRoot "$env:RUNNER_TEMP/platform-results/gui-source-boundary"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -135,6 +138,8 @@ jobs:
             ${{ runner.temp }}/platform-results/conformance/*.json
             ${{ runner.temp }}/platform-results/conformance/*.xml
             ${{ runner.temp }}/platform-results/conformance/*.log
+            ${{ runner.temp }}/platform-results/gui-source-boundary/*.json
+            ${{ runner.temp }}/platform-results/gui-source-boundary/*.trx
 
   macos-consumers:
     name: GUI macOS consumer (${{ matrix.cpu }})
@@ -220,6 +225,9 @@ jobs:
           TOOL_SHA: ${{ steps.sources.outputs.tooling }}
         run: |
           ./tooling/.github/scripts/Invoke-DotNetPlatformCompatibility.ps1 -ToolRoot "$env:GITHUB_WORKSPACE/tooling" -ToolSha $env:TOOL_SHA -WrapperRoot "$env:GITHUB_WORKSPACE/wrapper" -FixtureRoot "$env:GITHUB_WORKSPACE/fixture" -WrapperSha $env:WRAPPER_SHA -ConfigPath "$env:GITHUB_WORKSPACE/tooling/.github/unity-ci.json" -OutputRoot "$env:RUNNER_TEMP/platform-results" -Role gui -GuiRoot "$env:GITHUB_WORKSPACE/gui" -GuiSha $env:GUI_SHA
+      - name: Verify actual GUI calibration source with the existing host emulator
+        shell: pwsh
+        run: ./gui/Tests~/GuiSourceBoundary/Run.ps1 -WrapperRoot "$env:GITHUB_WORKSPACE/wrapper" -ToolRoot "$env:GITHUB_WORKSPACE/tooling" -OutputRoot "$env:RUNNER_TEMP/platform-results/gui-source-boundary"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -232,6 +240,8 @@ jobs:
             ${{ runner.temp }}/platform-results/conformance/*.json
             ${{ runner.temp }}/platform-results/conformance/*.xml
             ${{ runner.temp }}/platform-results/conformance/*.log
+            ${{ runner.temp }}/platform-results/gui-source-boundary/*.json
+            ${{ runner.temp }}/platform-results/gui-source-boundary/*.trx
 
   macos:
     name: GUI platform compatibility (macOS)
