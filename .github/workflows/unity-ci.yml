@@ -26,7 +26,7 @@ jobs:
           ./.github/scripts/tests/WssReleaseReceipt.Tests.ps1
           ./.github/scripts/tests/MacOSConsumerContract.Tests.ps1
   validate:
-    uses: cwru-non-academic/Unity_WSS_Integration_Lib/.github/workflows/_unity-validation.yml@7bd17625eea30c5cbddfd1cc9acdc7a71870dd75
+    uses: cwru-non-academic/Unity_WSS_Integration_Lib/.github/workflows/_unity-validation.yml@bf5ce95669fc42a6695b60af5e78465dc55442c2
     with:
       role: gui
       mode: committed
