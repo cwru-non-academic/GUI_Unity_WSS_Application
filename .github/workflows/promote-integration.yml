@@ -70,7 +70,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: cwru-non-academic/Unity_WSS_Integration_Lib
-          ref: 1a2f066dd2886552f814ffd3b6688e83d30f2341
+          ref: 1b8175f9d0ed118f47ed9f0eb5aaf954fc78b9d5
           path: promotion-tools
           token: ${{ steps.read.outputs.token }}
           persist-credentials: false
