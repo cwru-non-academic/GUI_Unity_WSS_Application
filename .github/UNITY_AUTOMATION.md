@@ -1,8 +1,10 @@
 # GUI conformance automation
 
 **GUI CI** and **WSS GUI preflight** emit **GUI general conformance**. Automated
-acceptance runs the same ten canonical cases and eighteen unchanged assertion
-expressions in ordinary .NET9, without starting or activating Unity.
+acceptance runs the canonical suites required by the verified payload profile in
+ordinary .NET9, without starting or activating Unity. Modern products require
+paired single-device and multi-device suites; the reviewed legacy profile retains
+its original ten-case/eighteen-expression baseline.
 
 The actual path is canonical fixture -> .NET scheduler -> shared production
 `WssConformanceController` forwarding methods -> shared production `Stimulation`
@@ -17,8 +19,10 @@ the same shared source tested here.
 `tools/UnityConformance/WssConformanceController.DotNet.cs` supplies the .NET host.
 The original constructor API and Unity source GUID remain intact.
 
-The GUI's exact mode160000 wrapper gitlink selects its .NET tooling and production
-source; the pinned C# fixture commit/hash selects the unchanged cases. Normal CI
+The GUI's exact mode160000 wrapper gitlink selects its production wrapper source.
+Trusted .NET tooling is independently pinned by the literal reusable-workflow SHA
+in [unity-ci.yml](workflows/unity-ci.yml); the verified payload profile selects the
+reviewed C# fixture commit/hash and unchanged case inventories. Normal CI
 uses public read-only checkouts and requires no App secret or persistent local
 runner. Test projects/output are generated outside Assets and source checkouts.
 Successful hosted evidence explicitly says `execution: dotnet`,
