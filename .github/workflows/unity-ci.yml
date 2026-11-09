@@ -10,8 +10,10 @@ env:
 permissions:
   contents: read
 concurrency:
-  group: unity-gui-${{ github.ref }}
-  cancel-in-progress: true
+  # Only stale PR checks supersede one another. Preserve every committed run.
+  # run_id also prevents pending replacement between same-source dispatches.
+  group: unity-gui-${{ github.workflow }}-${{ github.event_name }}-${{ github.event_name == 'pull_request' && github.ref || github.sha }}-${{ github.event_name == 'pull_request' && 'latest' || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 jobs:
   receipt-contracts:
     name: Release receipt safety contracts
@@ -26,7 +28,7 @@ jobs:
           ./.github/scripts/tests/WssReleaseReceipt.Tests.ps1
           ./.github/scripts/tests/MacOSConsumerContract.Tests.ps1
   validate:
-    uses: cwru-non-academic/Unity_WSS_Integration_Lib/.github/workflows/_unity-validation.yml@355bfd60fff14409515a5b4282d4cbf53ea582a6
+    uses: cwru-non-academic/Unity_WSS_Integration_Lib/.github/workflows/_unity-validation.yml@b19156ce1e9315c8b328f741069603fcb3c1a1b5
     with:
       role: gui
       mode: committed
