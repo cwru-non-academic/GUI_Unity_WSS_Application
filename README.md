@@ -1,75 +1,53 @@
-# Unity Project Setup (PLEASE READ)
+# WSS Unity GUI Application
 
-## CI checks
+The Unity Console scene controls the Wearable Stimulation System (WSS).
 
-Pull requests and pushes to `dev` and `main` expose `GUI general conformance` and separate `GUI platform compatibility (Windows)`, `GUI platform compatibility (Ubuntu)`, and `GUI platform compatibility (macOS)` contexts, matching the C# CLI names with CLI changed to GUI. The platform contexts are direct jobs without a reusable-workflow prefix.
+## First stimulation in the Unity Editor
 
-The jobs use the exact committed wrapper gitlink and pinned C# fixture. They run the application's production conformance forwarding methods and shared wrapper command/stack source on .NET 9, then verify package build/publish propagation and the wrapper's production transport selector. This is not Unity engine, scene/UI, Player/Editor, Mono/IL2CPP, or hardware coverage. Windows BLE is load-only. The updated wrapper supports macOS Mono routing and macOS-only plugin importers; Ubuntu Unity BLE and macOS IL2CPP remain explicitly unsupported. OS Serial runtime selection applies to the .NET probe, not proof of Unity Serial support. Licensed Unity tests remain separate.
+### Install and open the Console scene
 
-The wrapper gitlink records the application's runtime dependency. Immutable reusable-workflow references select validation tooling; they do not replace that gitlink. The GUI must never silently substitute an uncommitted or newer branch checkout for the recorded dependency. Adopt an updated wrapper through the reviewed application phase only after the integration libraries accept the same final Core candidate.
+Install Git, Git LFS, Unity Hub, and Unity Editor **2022.3.62f3**, the version in [ProjectVersion.txt](ProjectSettings/ProjectVersion.txt). Use the same editor version when reopening the project. The integration submodule uses an SSH URL. Set up GitHub SSH access and authorize the key for organization SSO if your account requires it.
 
-Before you clone the repo, follow these instructions:
-
-1. Install GitHub Desktop, which also installs Git LFS: https://desktop.github.com (if you are using git via command line, install Git LFS: https://git-lfs.com)
-2. (for GitHub Desktop) Goto the repo website, click the green Code button, and select “Open with GitHub Desktop” and clone the template project to your local machine
-(for git command line) Go to GitHub account settings and authorize your SSH key for CWRU SSO URL (https://docs.github.com/en/enterprise-cloud@latest/authentication/authenticating-with-saml-single-sign-on/authorizing-an-ssh-key-for-use-with-saml-single-sign-on) and then clone the final project template
-
-## 5. Modify your GLOBAL .gitconfig
-Not everyone may have the same path to UnityYAMLMerge (i.e. different operating systems or install locations). Because of this, we suggest you modify your local config to define the "unityyamlmerge" merge tool that this repository points to. To do this:
-
-i. Reveal hidden files on your operating system
-- Windows 10: Open the File Explorer application and select View > Options > Change folder and search options and then select the View tab and, in Advanced settings, select Show hidden files, folders, and drives and OK
-- Windows 11: Open the File Explorer application and select View > Show > Hidden Items
-- MacOS: Click on Finder and press the keyboard combination Shift + Cmd + . (period key)
-
-ii. Open the `.git/config` file by navigating to your local repo folder, open the hidden `.git` folder, then open the config file (note: this is different from the `.gitconfig` file in the repo’s root folder)
-
-iii. Identify your version of unity (e.g. `2022.3.19f1`). This will replace the word `VERSION` in the paths commented below depending on your OS. Then, add the following text to the bottom of the file, replacing `<path to UnityYAMLMerge>` with the one specific to your OS and Unity version. For instance, in Unity version 2022.3.19f1 on Windows, the last line should be `cmd = 'C:\\Program Files\\Unity\\Hub\\Editor\\2022.3.19f1\\Editor\\Data\\Tools\\UnityYAMLMerge.exe' merge -p "$BASE" "$REMOTE" "$LOCAL" "$MERGED"`
 ```bash
-[mergetool "unityyamlmerge"]
-    trustExitCode = false
-    #Replace <path to UnityYAMLMerge> in the next line with the following default locations (may be different depending on your Unity installation location)
-    # Installs using the Unity Hub (Default):
-    # Win: C:\\Program Files\\Unity\\Hub\\Editor\\VERSION\\Editor\\Data\\Tools\\UnityYAMLMerge.exe
-    # MacOS: /Applications/Unity/Hub/Editor/VERSION/Unity.app/Contents/Tools/UnityYAMLMerge
-    # Linux: /home/USERNAME/Unity/Hub/Editor/VERSION/Editor/Data/Tools/UnityYAMLMerge
-    cmd = '<path to UnityYAMLMerge>' merge -p "$BASE" "$REMOTE" "$LOCAL" "$MERGED"
+git lfs install
+git clone --branch dev --recurse-submodules https://github.com/cwru-non-academic/GUI_Unity_WSS_Application.git
+cd GUI_Unity_WSS_Application
+git lfs pull
 ```
-iv. Change the Git Config settings to use your local Git config in the menu bar Repository > Repository Settings > Git Config > Use a local Git config > Save.
 
-## 6. Add pre-commit and post-merge scripts
-Download the scripts from the link below and paste them into the hidden folder `<your_repo>/.git/hooks/`
-- Pre-commit: https://github.com/NYUGameCenter/Unity-Git-Config/blob/master/pre-commit
-- Post-commit: https://github.com/NYUGameCenter/Unity-Git-Config/blob/master/post-merge
-On MacOS and Linux, the pre-commit and post-merge files need to be made executable. This involves using terminal (Terminal.app on MacOS) to modify the file permissions for these two files using the following commands.
-```bash
-> cd <local_repo_folder>/.git/hooks
-> chmod 755 pre-commit
-> chmod 755 post-merge
-```
-## 7. Open the Project in Unity
-This project was created using `2021.3.0f1`. When you open this project in Unity, Unity may say that it needs to upgrade the project. Given this is a bare-bones project, this is a safe action and you may allow Unity to continue. Overall, your entire team should be using the **same version of Unity**.
+For a clone without dependencies, run `git submodule update --init --recursive` followed by `git lfs pull`. If Unity reports missing scripts or DLLs, check those commands completed and the `Assets/SubModules/WSSInterfacingModule` checkout is populated.
 
-## 8. Start creating your new project and commit/push changes to the team remote repo
+In Unity Hub, add the cloned folder as an existing project. Open it in the pinned editor and let the packages finish importing. In Unity's **Project** window, open **Assets → Scenes → Console**. Check **Window → General → Console** for compilation errors before entering Play mode.
 
-## Video tutorials
-1. Github setup: https://youtu.be/iWniKp_O21o?feature=shared
-2. Merge conflict resolution: https://youtu.be/vJIjV-GlGFg?feature=shared
+### Prepare the profile and select a transport
 
-## Starting a new project or adding version control to an old one?
-If you are starting a new project you can start working now, but if you are adding version control to an old one follow these steps:
-1. Paste your project files into this repository on your local machine. 
-2. Open the project on the target Unity version, so all the files are modified as necessary. 
-3. If you had Unity Version Control (formerly Collab or Plastic SCM), disable it now.
-4. Save your project and close Unity.
-5. Delete left over files from Unity Version Control like x.meta.private or y.meta.private.meta (some files may be hidden so enable see hidden files)
-6. Commit and push.
-7. If you are having issues with .meta files check and modify your gitignore or make sure there are no empty folders.
+Follow the [hardware overview](https://cwru-non-academic.github.io/WSS_Documentation/hardwareDocs/wsshardware.html) for the physical setup and the [bench verification handoff](https://github.com/cwru-non-academic/WSS_Documentation/blob/dev/apiDocs/conceptual/start-here-using-an-application.md#bench-verification) for the approved profile and measurement procedure. Use a bench setup with no person connected.
 
-## 9. Cloning the Repository with Submodules (Terminal)
-```bash
-git clone --recursive git@github.com:cwru-non-academic/SimpleWSSStimConsole.git
-```
+The Editor reads `stimConfig.json`, `stimParams.json`, and `modelConfig.json` from `Assets/StreamingAssets/`. Save a copy of the shipped files outside that directory before applying your bench profile. In `stimConfig.json`, match the device count, firmware, and receiver address. The checked-in file uses H03 and the historical first receiver address `0x81` when `wssTargets` is absent. Supply `wssTargets` if your profile uses a different receiver address. Keep the channel calibration and model files together with the Core settings.
+
+1. In the **Hierarchy**, select **Stim**. In its **Stimulation** component, set **Transport Type** to **Serial**. Clear **Auto** and enter the device port in **Device Name**. On Windows, use the COM number from **Device Manager → Ports (COM & LPT)**. If you use the in-game serial port picker, select the WSS port rather than the separate accessory port.
+2. For BLE, use **BLE** in the same Inspector. Clear **Auto** and enter `name:` followed by the exact advertised NUS device name. Use `id:` and the local identifier if names are shared. Enable Bluetooth and grant access to the application if prompted. The wrapper offers BLE on Windows and macOS Mono. The [desktop BLE notes](#desktop-ble-preparation) cover the macOS requirements and validation limits.
+3. For a rehearsal without a device, choose **Test** in the Inspector before entering Play mode. Restore the previous scene settings when done.
+
+### Confirm output and stop
+
+1. Click **Play** and focus the **Game** tab. Wait for **Setting Up...** to change to **Ready** followed by the model name. If the device still needs to be started, use **Start Stim**. Setup can start streaming automatically.
+2. In the **AmpControl** panel, the left and right arrows select a logical
+   channel. Confirm the panel shows the channel specified by the approved bench
+   procedure. AmpControl sends direct requests outside the normalized
+   calibration in `stimParams.json`. Use the exact action and limits specified
+   by your approved bench procedure for this panel. The **Up Arrow** adjusts
+   and sends output while held, and releasing it clears the request. Use it
+   only if the procedure calls for it. The **Down Arrow** can wrap from zero
+   pulse width to the panel's maximum, so it is excluded from this walkthrough.
+   Confirm measured output and check that the other channels remain idle.
+3. Click **Stop Stim** or, with the **Game** tab focused and **AmpControl** active, press **Esc**. Verify output has ceased, then leave Play mode.
+
+If setup stays at **Setting Up...**, check the Unity Console for device, port, and setup errors. Compare the active firmware and receiver settings with your bench profile. The Game view's labels report application state. The shared bench procedure establishes measured device output.
+
+### Standalone Player
+
+To build the desktop Player, open **File → Build Settings**, select the desktop target, check that `Assets/Scenes/Console.unity` is enabled, and select **Build**. Set and verify the transport in the scene before building. The Player uses the `StreamingAssets` directory packaged with that build. Use the built Player's log for troubleshooting. The Editor and Player need separate validation on the intended OS and transport.
 
 ## Desktop BLE preparation
 
@@ -85,3 +63,17 @@ CI. GUI acceptance additionally verifies the actual wrapper gitlink and its
 post-merge preflight. Main supplies registered trusted tooling; stable releases
 remain disabled. Coverage describes the .NET harness, not Unity Editor/Player,
 IL2CPP or physical BLE validation.
+
+## Contributor setup
+
+UnityYAMLMerge and optional Git hooks help when contributing scene or prefab
+changes. Git LFS and the pinned integration submodule are the Git prerequisites
+for opening the application. For team merge setup, see [Unity Smart Merge](https://docs.unity3d.com/2022.3/Documentation/Manual/SmartMerge.html).
+
+## CI checks
+
+Pull requests and pushes to `dev` and `main` expose `GUI general conformance` and separate `GUI platform compatibility (Windows)`, `GUI platform compatibility (Ubuntu)`, and `GUI platform compatibility (macOS)` contexts, matching the C# CLI names with CLI changed to GUI. The platform contexts are direct jobs without a reusable-workflow prefix.
+
+The jobs use the exact committed wrapper gitlink and pinned C# fixture. They run the application's production conformance forwarding methods and shared wrapper command/stack source on .NET 9, then verify package build/publish propagation and the wrapper's production transport selector. This is not Unity engine, scene/UI, Player/Editor, Mono/IL2CPP, or hardware coverage. Windows BLE is load-only. The updated wrapper supports macOS Mono routing and macOS-only plugin importers; Ubuntu Unity BLE and macOS IL2CPP remain explicitly unsupported. OS Serial runtime selection applies to the .NET probe, not proof of Unity Serial support. Licensed Unity tests remain separate.
+
+The wrapper gitlink records the application's runtime dependency. Immutable reusable-workflow references select validation tooling; they do not replace that gitlink. The GUI must never silently substitute an uncommitted or newer branch checkout for the recorded dependency. Adopt an updated wrapper through the reviewed application phase only after the integration libraries accept the same final Core candidate.
